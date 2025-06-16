@@ -108,3 +108,7 @@ export const ELLIPSE_STROKE_WIDTH_RATIO = 0.005;
 import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
 const strokeWidth = width * ELLIPSE_STROKE_WIDTH_RATIO;
 ```
+
+- 楕円や主要 UI で使うプライマリカラーは `utils/constants.ts` の `PRIMARY_COLOR` で一元管理しています。
+  - 例: `import { PRIMARY_COLOR } from '@/utils/constants'`
+  - Tailwind CSS で使う場合は `style` 属性や `className` で `PRIMARY_COLOR` を参照してください。

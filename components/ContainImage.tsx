@@ -3,7 +3,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
+import { ELLIPSE_STROKE_WIDTH_RATIO, PRIMARY_COLOR } from '@/utils/constants';
 import Image from 'next/image';
 import { useRef } from 'react';
 import { useEllipseEditor } from '../hooks/useEllipseEditor';
@@ -125,10 +125,9 @@ export function ContainImage({
         onPointerUp={handlePointerUp}
       >
         {ellipses.map((ellipse) => {
-          // 選択状態に応じて色を切り替え
+          // 色は常にPRIMARY_COLORを使う
+          const color = PRIMARY_COLOR;
           const isSelected = selectedId === ellipse.id;
-          const hasSelection = !!selectedId;
-          const color = !hasSelection || isSelected ? '#e11d48' : '#888';
           return (
             <g key={ellipse.id}>
               <ellipse
@@ -286,7 +285,7 @@ function renderDeleteButton({
             zIndex: 20,
             background: 'transparent',
             border: 'none',
-            color: '#e11d48',
+            color: PRIMARY_COLOR,
             borderRadius: '50%',
             width: 28,
             height: 28,
