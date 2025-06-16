@@ -1,6 +1,8 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { getEllipses, saveEllipses } from '../repositories/ellipseRepository';
 import type { Ellipse } from '../types/ellipse';
 import type { HandleDirection } from '../types/ellipseHandle';
+import { debounce } from '../utils/debounce';
 
 /**
  * 楕円描画・編集用カスタムフック
@@ -16,11 +18,46 @@ export function useEllipseEditor(
   height: number,
   initialEllipses: Ellipse[] = []
 ) {
-  const [ellipses, setEllipses] = useState<Ellipse[]>(initialEllipses);
+  const [ellipses, setEllipsesState] = useState<Ellipse[]>(initialEllipses);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Ellipse | null>(null); // 描画中のプレビュー楕円
   const dragStart = useRef<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  // indexを1始まりで振り直す
+  const renumberEllipses = useCallback((list: Ellipse[]): Ellipse[] => {
+    return list.map((el, i) => ({ ...el, index: i + 1 }));
+  }, []);
+
+  // --- 永続化処理 ---
+  // debounce付き保存関数
+  const debouncedSave = useRef(
+    debounce((ellipses: Ellipse[], caller: string) => {
+      saveEllipses(ellipses, caller);
+    }, 500)
+  ).current;
+
+  // 永続化付きsetEllipses
+  const setEllipses = useCallback(
+    (updater: (prev: Ellipse[]) => Ellipse[], caller: string) => {
+      setEllipsesState((prev) => {
+        const next = renumberEllipses(updater(prev));
+        debouncedSave(next, caller);
+        return next;
+      });
+    },
+    [debouncedSave, renumberEllipses]
+  );
+
+  // 初回マウント時にlocalStorageから取得
+  useEffect(() => {
+    getEllipses().then((loaded) => {
+      if (loaded && loaded.length > 0) {
+        setEllipsesState(renumberEllipses(loaded));
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 楕円の新規描画開始
   const onPointerDown = useCallback(
@@ -62,16 +99,11 @@ export function useEllipseEditor(
     [width, height]
   );
 
-  // indexを1始まりで振り直す
-  const renumberEllipses = useCallback((list: Ellipse[]): Ellipse[] => {
-    return list.map((el, i) => ({ ...el, index: i + 1 }));
-  }, []);
-
   // 楕円の新規描画確定
   const onPointerUp = useCallback(() => {
     if (draft && draft.rx > 0.01 && draft.ry > 0.01) {
-      setEllipses((prev) =>
-        renumberEllipses([
+      setEllipses(
+        (prev) => [
           ...prev,
           {
             ...draft,
@@ -79,19 +111,20 @@ export function useEllipseEditor(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },
-        ])
+        ],
+        'addEllipse'
       );
     }
     setDraft(null);
     dragStart.current = null;
-  }, [draft, renumberEllipses]);
+  }, [draft, setEllipses]);
 
   // 楕円削除時もindex振り直し
   const setEllipsesWithRenumber = useCallback(
-    (updater: (prev: Ellipse[]) => Ellipse[]) => {
-      setEllipses((prev) => renumberEllipses(updater(prev)));
+    (updater: (prev: Ellipse[]) => Ellipse[], caller: string) => {
+      setEllipses(updater, caller);
     },
-    [renumberEllipses]
+    [setEllipses]
   );
 
   // 楕円選択・移動用
@@ -128,20 +161,22 @@ export function useEllipseEditor(
       const rect = svg.getBoundingClientRect();
       const x = (e.clientX - rect.left) / width;
       const y = (e.clientY - rect.top) / height;
-      setEllipsesWithRenumber((prev) =>
-        prev.map((el) =>
-          el.id === moveTarget
-            ? {
-                ...el,
-                centerX: x + moveOffset.current!.x,
-                centerY: y + moveOffset.current!.y,
-                updatedAt: new Date().toISOString(),
-              }
-            : el
-        )
+      setEllipsesWithRenumber(
+        (prev) =>
+          prev.map((el) =>
+            el.id === moveTarget
+              ? {
+                  ...el,
+                  centerX: x + moveOffset.current!.x,
+                  centerY: y + moveOffset.current!.y,
+                  updatedAt: new Date().toISOString(),
+                }
+              : el
+          ),
+        'updateEllipse'
       );
     },
-    [width, height, moveTarget]
+    [width, height, moveTarget, setEllipsesWithRenumber]
   );
 
   // 楕円移動終了
@@ -218,8 +253,8 @@ export function useEllipseEditor(
       const rect = svg.getBoundingClientRect();
       const x = (e.clientX - rect.left) / width;
       const y = (e.clientY - rect.top) / height;
-      setEllipsesWithRenumber((prev) =>
-        prev.map((el) => {
+      setEllipsesWithRenumber((prev) => {
+        return prev.map((el) => {
           if (el.id !== id) return el;
           // 対角ハンドルを固定し、中心・半径を再計算
           const newCenterX = (x + oppX) / 2;
@@ -234,10 +269,10 @@ export function useEllipseEditor(
             ry: Math.max(0.01, newRy),
             updatedAt: new Date().toISOString(),
           };
-        })
-      );
+        });
+      }, 'updateEllipse');
     },
-    [width, height]
+    [width, height, setEllipsesWithRenumber]
   );
 
   // リサイズ終了時の処理
@@ -247,7 +282,8 @@ export function useEllipseEditor(
 
   return {
     ellipses,
-    setEllipses: setEllipsesWithRenumber,
+    setEllipses: (updater: (prev: Ellipse[]) => Ellipse[], caller: string) =>
+      setEllipsesWithRenumber(updater, caller),
     draft,
     selectedId,
     setSelectedId,

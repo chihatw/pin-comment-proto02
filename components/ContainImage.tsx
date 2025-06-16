@@ -76,7 +76,10 @@ export function ContainImage({
   // 選択中楕円の削除
   const handleDeleteEllipse = () => {
     if (!selectedId) return;
-    setEllipses((prev) => prev.filter((el) => el.id !== selectedId));
+    setEllipses(
+      (prev) => prev.filter((el) => el.id !== selectedId),
+      'ContainImage:handleDeleteEllipse'
+    );
     setSelectedId(null);
   };
 

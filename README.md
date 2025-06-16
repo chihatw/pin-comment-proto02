@@ -2,6 +2,14 @@
 
 このプロジェクトは Next.js（App Router）+ TypeScript + Tailwind CSS v4 + shadcn/ui + pnpm で構築されています。
 
+## 楕円データの永続化について
+
+- 楕円リスト（ellipses）は、`/repositories/ellipseRepository.ts` のリポジトリ経由で localStorage に永続化されます。
+- データ保存は Promise ベースで、将来的な Supabase など外部 DB 移行も容易です。
+- 連続した編集操作時は 500ms の debounce（バウンサー）で無駄な保存を抑制します。
+- 保存時は呼び出し元ラベル（例: "addEllipse", "updateEllipse", "deleteEllipse" など）を指定し、console.log で出力されます（デバッグ用）。
+- 初回マウント時は localStorage から自動で復元されます。
+
 ## 開発サーバーの起動
 
 ```sh
