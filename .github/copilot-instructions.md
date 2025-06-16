@@ -4,6 +4,10 @@
   https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file
 -->
 
+# コーディングスタイル
+
+- React のフック（useState, useEffect など）は `import { useState, useEffect } from 'react'` のように個別 import し、`useState()` のように記述してください。`React.useState()` のような記法は使わないでください。
+
 # プロジェクト概要
 
 このプロジェクトは **Next.js + TypeScript + Tailwind CSS v4 + shadcn/ui** を使用しています。

@@ -24,3 +24,62 @@ pnpm build
 ## ホームページ
 
 - `/` に「hello, world」と表示されます。
+
+## ContainImage コンポーネント
+
+指定した幅・高さ内に、objectFit: 'contain' で画像を収めて表示する UI コンポーネントです。
+
+### 使い方
+
+```tsx
+import { ContainImage } from '@/components/ContainImage';
+
+<ContainImage src='/sample.png' alt='サンプル画像' width={640} height={480} />;
+```
+
+- `width`, `height` は親コンポーネントで計算し、アスペクト比を保って最大表示したいサイズを渡してください。
+- 画像の優先読み込みをしたい場合は `priority` を指定できます。
+
+### 親コンポーネント例
+
+画面サイズと画像サイズから最大表示サイズを計算し、`ContainImage` に渡します。
+
+```tsx
+import { ContainImage } from '@/components/ContainImage';
+
+function calcContainSize(
+  containerW: number,
+  containerH: number,
+  imageW: number,
+  imageH: number
+) {
+  const containerRatio = containerW / containerH;
+  const imageRatio = imageW / imageH;
+  if (imageRatio > containerRatio) {
+    return { width: containerW, height: Math.round(containerW / imageRatio) };
+  } else {
+    return { width: Math.round(containerH * imageRatio), height: containerH };
+  }
+}
+```
+
+## ユーティリティ関数
+
+### calcContainSize
+
+画面サイズと画像サイズから、アスペクト比を保って最大表示できる幅・高さを計算する関数です。
+
+```ts
+import { calcContainSize } from '@/utils/calcContainSize';
+
+const { width, height } = calcContainSize(
+  containerWidth,
+  containerHeight,
+  imageWidth,
+  imageHeight
+);
+```
+
+- containerWidth, containerHeight: 親要素（例: 画面）の幅・高さ（px）
+- imageWidth, imageHeight: 画像の幅・高さ（px）
+- 戻り値: 最大で収まる幅・高さのオブジェクト
