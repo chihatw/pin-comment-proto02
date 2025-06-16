@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { getEllipses, saveEllipses } from '../repositories/ellipseRepository';
 import type { Ellipse } from '../types/ellipse';
 import type { HandleDirection } from '../types/ellipseHandle';
@@ -22,7 +22,7 @@ export function useEllipseEditor(
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Ellipse | null>(null); // 描画中のプレビュー楕円
   const dragStart = useRef<{ x: number; y: number } | null>(null);
-  const svgRef = useRef<SVGSVGElement | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null) as RefObject<SVGSVGElement>;
 
   // indexを1始まりで振り直す
   const renumberEllipses = useCallback((list: Ellipse[]): Ellipse[] => {

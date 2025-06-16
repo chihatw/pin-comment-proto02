@@ -6,7 +6,6 @@ import {
 import { ELLIPSE_STROKE_WIDTH_RATIO, PRIMARY_COLOR } from '@/utils/constants';
 import Image from 'next/image';
 import { useRef } from 'react';
-import { useEllipseEditor } from '../hooks/useEllipseEditor';
 import type { Ellipse } from '../types/ellipse';
 import type { HandleDirection } from '../types/ellipseHandle';
 
@@ -20,14 +19,45 @@ export type ContainImageProps = {
   /** 親から渡される高さ（px） */
   height: number;
   /** 楕円リスト */
-  ellipses?: Ellipse[]; // 省略可に変更（内部管理も可能に）
+  ellipses: Ellipse[];
+  /** 選択中楕円ID */
+  selectedId: string | null;
+  /** ドラフト楕円（描画中プレビュー） */
+  draft?: Ellipse | null;
+  /** SVG参照 */
+  svgRef: React.RefObject<SVGSVGElement>;
+  /** 楕円選択ハンドラ */
+  setSelectedId: (id: string | null) => void;
+  /** pointerDownハンドラ */
+  onPointerDown: (e: React.PointerEvent<SVGSVGElement>) => void;
+  /** pointerMoveハンドラ */
+  onPointerMove: (e: React.PointerEvent<SVGSVGElement>) => void;
+  /** pointerUpハンドラ */
+  onPointerUp: () => void;
+  /** 楕円クリックハンドラ */
+  onEllipsePointerDown: (
+    ellipseId: string,
+    e: React.PointerEvent<SVGElement>
+  ) => void;
+  onEllipsePointerMove: (e: React.PointerEvent<SVGSVGElement>) => void;
+  onEllipsePointerUp: () => void;
+  /** ハンドル操作ハンドラ */
+  onHandlePointerDown: (
+    ellipseId: string,
+    dir: HandleDirection,
+    e: React.PointerEvent<SVGCircleElement>
+  ) => void;
+  onHandlePointerMove: (e: React.PointerEvent<SVGSVGElement>) => void;
+  onHandlePointerUp: () => void;
+  /** 楕円削除ハンドラ */
+  onDeleteEllipse: () => void;
   /** オプション: 画像の優先読み込み */
   priority?: boolean;
 };
 
 /**
  * 指定された幅・高さ内にobjectFit: 'contain'で画像を収めて表示し、
- * 楕円リストをSVGで重ねて描画するコンポーネント
+ * 楕円リストをSVGで重ねて描画するコンポーネント（描画専念）
  * @package
  */
 export function ContainImage({
@@ -35,31 +65,26 @@ export function ContainImage({
   alt,
   width,
   height,
-  ellipses: ellipsesProp,
+  ellipses,
+  selectedId,
+  draft,
+  svgRef,
+  setSelectedId,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onEllipsePointerDown,
+  onEllipsePointerMove,
+  onEllipsePointerUp,
+  onHandlePointerDown,
+  onHandlePointerMove,
+  onHandlePointerUp,
+  onDeleteEllipse,
   priority = false,
 }: ContainImageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // 線の太さは画像幅の0.5%（例: 400pxなら2px）
   const strokeWidth = width * ELLIPSE_STROKE_WIDTH_RATIO;
-
-  // 楕円編集フック
-  const {
-    ellipses,
-    draft,
-    selectedId,
-    setSelectedId,
-    onPointerDown,
-    onPointerMove,
-    onPointerUp,
-    onEllipsePointerDown,
-    onEllipsePointerMove,
-    onEllipsePointerUp,
-    svgRef,
-    onHandlePointerDown,
-    onHandlePointerMove,
-    onHandlePointerUp,
-    setEllipses,
-  } = useEllipseEditor(width, height, ellipsesProp ?? []);
 
   // SVGイベントハンドラの合成
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -73,23 +98,13 @@ export function ContainImage({
     onHandlePointerUp();
   };
 
-  // 選択中楕円の削除
-  const handleDeleteEllipse = () => {
-    if (!selectedId) return;
-    setEllipses(
-      (prev) => prev.filter((el) => el.id !== selectedId),
-      'ContainImage:handleDeleteEllipse'
-    );
-    setSelectedId(null);
-  };
-
   // 削除ボタンの表示
   const deleteButton = renderDeleteButton({
     selectedId,
     ellipses,
     width,
     height,
-    handleDeleteEllipse,
+    handleDeleteEllipse: onDeleteEllipse,
   });
 
   return (

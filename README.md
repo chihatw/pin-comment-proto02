@@ -33,43 +33,73 @@ pnpm build
 
 - `/` に「hello, world」と表示されます。
 
-## ContainImage コンポーネント
+## ContainImage コンポーネント（描画専念型）
 
-指定した幅・高さ内に、objectFit: 'contain' で画像を収めて表示する UI コンポーネントです。
+`ContainImage` は、**ロジックを持たず描画専念**のコンポーネントです。楕円の状態管理や編集ロジックは親コンポーネントで行い、props で受け渡します。
 
-### 使い方
+- 詳細は [`components/ContainImage.md`](./components/ContainImage.md) を参照してください。
 
-```tsx
-import { ContainImage } from '@/components/ContainImage';
-
-<ContainImage src='/sample.png' alt='サンプル画像' width={640} height={480} />;
-```
-
-- `width`, `height` は親コンポーネントで計算し、アスペクト比を保って最大表示したいサイズを渡してください。
-- 画像の優先読み込みをしたい場合は `priority` を指定できます。
-
-### 親コンポーネント例
-
-画面サイズと画像サイズから最大表示サイズを計算し、`ContainImage` に渡します。
+### 使い方（useEllipseEditor との組み合わせ例）
 
 ```tsx
 import { ContainImage } from '@/components/ContainImage';
+import { useEllipseEditor } from '@/hooks/useEllipseEditor';
 
-function calcContainSize(
-  containerW: number,
-  containerH: number,
-  imageW: number,
-  imageH: number
-) {
-  const containerRatio = containerW / containerH;
-  const imageRatio = imageW / imageH;
-  if (imageRatio > containerRatio) {
-    return { width: containerW, height: Math.round(containerW / imageRatio) };
-  } else {
-    return { width: Math.round(containerH * imageRatio), height: containerH };
-  }
-}
+const {
+  ellipses,
+  draft,
+  selectedId,
+  setSelectedId,
+  svgRef,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onEllipsePointerDown,
+  onEllipsePointerMove,
+  onEllipsePointerUp,
+  onHandlePointerDown,
+  onHandlePointerMove,
+  onHandlePointerUp,
+  setEllipses,
+} = useEllipseEditor(width, height, []);
+
+const handleDeleteEllipse = () => {
+  if (!selectedId) return;
+  setEllipses(
+    (prev) => prev.filter((el) => el.id !== selectedId),
+    'handleDeleteEllipse'
+  );
+  setSelectedId(null);
+};
+
+<ContainImage
+  src={url}
+  alt={alt}
+  width={width}
+  height={height}
+  ellipses={ellipses}
+  selectedId={selectedId}
+  draft={draft}
+  svgRef={svgRef}
+  setSelectedId={setSelectedId}
+  onPointerDown={onPointerDown}
+  onPointerMove={onPointerMove}
+  onPointerUp={onPointerUp}
+  onEllipsePointerDown={onEllipsePointerDown}
+  onEllipsePointerMove={onEllipsePointerMove}
+  onEllipsePointerUp={onEllipsePointerUp}
+  onHandlePointerDown={onHandlePointerDown}
+  onHandlePointerMove={onHandlePointerMove}
+  onHandlePointerUp={onHandlePointerUp}
+  onDeleteEllipse={handleDeleteEllipse}
+  priority
+/>;
 ```
+
+## useEllipseEditor フック
+
+- 楕円の描画・編集・選択・移動・リサイズなどのロジックを一括で管理するカスタムフックです。
+- 詳細は [`hooks/useEllipseEditor.md`](./hooks/useEllipseEditor.md) を参照してください。
 
 ## ユーティリティ関数
 

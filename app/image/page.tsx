@@ -1,6 +1,7 @@
 'use client';
 
 import { ContainImage } from '@/components/ContainImage';
+import { useEllipseEditor } from '@/hooks/useEllipseEditor';
 import { getMockImageUrl, mockImageMeta } from '@/mocks/imageMeta';
 import { calcContainSize } from '@/utils/calcContainSize';
 import { useEffect, useRef, useState } from 'react';
@@ -32,14 +33,43 @@ export default function ImagePage() {
     return () => window.removeEventListener('resize', updateMainColSize);
   }, []);
 
-  if (!meta) return <div>画像がありません</div>;
-
   const contain = calcContainSize(
     mainColSize.width,
     mainColSize.height,
     meta.width,
     meta.height
   );
+
+  // 楕円編集ロジックをページ側で管理
+  const {
+    ellipses,
+    draft,
+    selectedId,
+    setSelectedId,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onEllipsePointerDown,
+    onEllipsePointerMove,
+    onEllipsePointerUp,
+    svgRef,
+    onHandlePointerDown,
+    onHandlePointerMove,
+    onHandlePointerUp,
+    setEllipses,
+  } = useEllipseEditor(contain.width, contain.height, []);
+
+  if (!meta) return <div>画像がありません</div>;
+
+  // 選択中楕円の削除
+  const handleDeleteEllipse = () => {
+    if (!selectedId) return;
+    setEllipses(
+      (prev) => prev.filter((el) => el.id !== selectedId),
+      'ImagePage:handleDeleteEllipse'
+    );
+    setSelectedId(null);
+  };
 
   return (
     <main className='w-screen h-screen overflow-hidden'>
@@ -54,6 +84,21 @@ export default function ImagePage() {
             alt={meta.file_name}
             width={contain.width}
             height={contain.height}
+            ellipses={ellipses}
+            selectedId={selectedId}
+            draft={draft}
+            svgRef={svgRef}
+            setSelectedId={setSelectedId}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onEllipsePointerDown={onEllipsePointerDown}
+            onEllipsePointerMove={onEllipsePointerMove}
+            onEllipsePointerUp={onEllipsePointerUp}
+            onHandlePointerDown={onHandlePointerDown}
+            onHandlePointerMove={onHandlePointerMove}
+            onHandlePointerUp={onHandlePointerUp}
+            onDeleteEllipse={handleDeleteEllipse}
             priority
           />
         </div>
