@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 export default function ImagePage() {
   const meta = mockImageMeta;
   const url = getMockImageUrl();
-  if (!meta) return <div>画像がありません</div>;
 
   // 画面サイズ取得（クライアントサイドのみ）
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -25,6 +24,8 @@ export default function ImagePage() {
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
+
+  if (!meta) return <div>画像がありません</div>;
 
   const contain = calcContainSize(
     windowSize.width,

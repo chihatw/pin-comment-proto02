@@ -83,3 +83,20 @@ const { width, height } = calcContainSize(
 - containerWidth, containerHeight: 親要素（例: 画面）の幅・高さ（px）
 - imageWidth, imageHeight: 画像の幅・高さ（px）
 - 戻り値: 最大で収まる幅・高さのオブジェクト
+
+## 共通定数
+
+- `utils/constants.ts` に、楕円のストローク幅などで使う定数 `ELLIPSE_STROKE_WIDTH_RATIO`（0.005, 画像幅の 0.5%）を定義しています。
+  - 例: 線の太さやクリック判定の許容範囲など、Viewer/Editor 両方で利用できます。
+
+```ts
+// utils/constants.ts
+export const ELLIPSE_STROKE_WIDTH_RATIO = 0.005;
+```
+
+`ContainImage` などで利用する場合は、
+
+```tsx
+import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
+const strokeWidth = width * ELLIPSE_STROKE_WIDTH_RATIO;
+```

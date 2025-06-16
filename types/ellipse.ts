@@ -22,4 +22,6 @@ export type Ellipse = {
   createdAt: string;
   /** 更新日時（ISO 8601文字列） */
   updatedAt: string;
+  /** 画像ごとの楕円の表示順インデックス（1始まりの連番） */
+  index: number;
 };
