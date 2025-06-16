@@ -3,7 +3,7 @@
 import { ContainImage } from '@/components/ContainImage';
 import { getMockImageUrl, mockImageMeta } from '@/mocks/imageMeta';
 import { calcContainSize } from '@/utils/calcContainSize';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * /image ページ
@@ -14,35 +14,54 @@ export default function ImagePage() {
   const meta = mockImageMeta;
   const url = getMockImageUrl();
 
-  // 画面サイズ取得（クライアントサイドのみ）
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  // メインカラムのサイズを取得
+  const mainColRef = useRef<HTMLDivElement>(null);
+  const [mainColSize, setMainColSize] = useState({ width: 0, height: 0 });
+
   useEffect(() => {
-    function update() {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    function updateMainColSize() {
+      if (mainColRef.current) {
+        setMainColSize({
+          width: mainColRef.current.clientWidth,
+          height: mainColRef.current.clientHeight,
+        });
+      }
     }
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    updateMainColSize();
+    window.addEventListener('resize', updateMainColSize);
+    return () => window.removeEventListener('resize', updateMainColSize);
   }, []);
 
   if (!meta) return <div>画像がありません</div>;
 
   const contain = calcContainSize(
-    windowSize.width,
-    windowSize.height,
+    mainColSize.width,
+    mainColSize.height,
     meta.width,
     meta.height
   );
 
   return (
-    <main className='flex min-h-screen items-center justify-center bg-gray-100'>
-      <ContainImage
-        src={url}
-        alt={meta.file_name}
-        width={contain.width}
-        height={contain.height}
-        priority
-      />
+    <main className='w-screen h-screen overflow-hidden'>
+      <div className='grid grid-cols-[minmax(0,1fr)_320px] w-full h-full'>
+        {/* メインカラム: 画像と楕円 */}
+        <div
+          ref={mainColRef}
+          className='w-full h-full bg-pink-200 flex items-center justify-center'
+        >
+          <ContainImage
+            src={url}
+            alt={meta.file_name}
+            width={contain.width}
+            height={contain.height}
+            priority
+          />
+        </div>
+        {/* サブカラム: 今は空欄 */}
+        <div className='flex items-center justify-center h-full bg-amber-300'>
+          {/* サブカラム（今は空欄） */}
+        </div>
+      </div>
     </main>
   );
 }
