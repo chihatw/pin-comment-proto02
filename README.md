@@ -142,3 +142,11 @@ const strokeWidth = width * ELLIPSE_STROKE_WIDTH_RATIO;
 - 楕円や主要 UI で使うプライマリカラーは `utils/constants.ts` の `PRIMARY_COLOR` で一元管理しています。
   - 例: `import { PRIMARY_COLOR } from '@/utils/constants'`
   - Tailwind CSS で使う場合は `style` 属性や `className` で `PRIMARY_COLOR` を参照してください。
+
+## コメントリストの楕円インデックス表示
+
+- コメント一覧（`/image` ページ右カラム）では、各コメントの先頭に対応する楕円のインデックス（[1], [2], ...）が表示されます。
+- インデックスは楕円の描画順（1 始まり）で、楕円が削除・追加されると自動で振り直されます。
+- コメントが紐付く楕円が存在しない場合は `?` と表示されます。
+
+例: `[1] コメント内容` のように表示されます。

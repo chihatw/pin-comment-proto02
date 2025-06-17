@@ -166,6 +166,7 @@ export function ContainImage({
                 fill={color}
                 fontWeight='bold'
                 pointerEvents='none'
+                fontFamily='monospace'
                 style={{ userSelect: 'none' }}
               >
                 {ellipse.index}
@@ -177,6 +178,7 @@ export function ContainImage({
                 fill={color}
                 fontWeight='bold'
                 pointerEvents='none'
+                fontFamily='monospace'
                 style={{ userSelect: 'none' }}
               >
                 {ellipse.index}

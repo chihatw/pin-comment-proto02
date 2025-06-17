@@ -8,10 +8,22 @@
 - 日付プロパティ（created_at, updated_at など）は ISO 8601 形式の string 型とする
 - 型ごとにファイルを分割し、必要に応じて JSDoc コメントを記載する
 
+## 追加型一覧
+
+### EllipseComment
+
+- `types/comment.ts` に定義
+- 楕円（Ellipse）に紐付くコメント情報を管理
+- プロパティ:
+  - `id`: コメントの UUID
+  - `ellipseId`: 紐付く楕円の UUID
+  - `content`: コメント本文
+  - `createdAt`, `updatedAt`: ISO 8601 形式の日時
+
 ## インポート例
 
 ```ts
-import { ImageMeta } from '@/types/image';
+import { EllipseComment } from '@/types/comment';
 ```
 
 ## その他

@@ -1,5 +1,6 @@
 'use client';
 
+import { CommentList } from '@/components/CommentList';
 import { ContainImage } from '@/components/ContainImage';
 import { useEllipseEditor } from '@/hooks/useEllipseEditor';
 import { getMockImageUrl, mockImageMeta } from '@/mocks/imageMeta';
@@ -57,6 +58,9 @@ export default function ImagePage() {
     onHandlePointerMove,
     onHandlePointerUp,
     setEllipses,
+    comments,
+    updateComment,
+    PRIMARY_COLOR,
   } = useEllipseEditor(contain.width, contain.height, []);
 
   if (!meta) return <div>画像がありません</div>;
@@ -77,7 +81,7 @@ export default function ImagePage() {
         {/* メインカラム: 画像と楕円 */}
         <div
           ref={mainColRef}
-          className='w-full h-full bg-pink-200 flex items-center justify-center'
+          className='w-full h-full flex items-center justify-center'
         >
           <ContainImage
             src={url}
@@ -102,9 +106,23 @@ export default function ImagePage() {
             priority
           />
         </div>
-        {/* サブカラム: 今は空欄 */}
-        <div className='flex items-center justify-center h-full bg-amber-300'>
-          {/* サブカラム（今は空欄） */}
+        {/* サブカラム: コメント一覧＋直接編集UI */}
+        <div
+          className='flex justify-center h-full'
+          onClick={() => setSelectedId(null)}
+        >
+          <div className='w-full max-w-xs bg-white rounded shadow p-4'>
+            <h2 className='text-lg font-bold mb-2'>コメント</h2>
+            <CommentList
+              comments={comments}
+              ellipses={ellipses}
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+              updateComment={updateComment}
+              handleDeleteEllipse={handleDeleteEllipse}
+              PRIMARY_COLOR={PRIMARY_COLOR}
+            />
+          </div>
         </div>
       </div>
     </main>
