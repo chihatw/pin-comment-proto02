@@ -150,3 +150,48 @@ const strokeWidth = width * ELLIPSE_STROKE_WIDTH_RATIO;
 - コメントが紐付く楕円が存在しない場合は `?` と表示されます。
 
 例: `[1] コメント内容` のように表示されます。
+
+## Supabase 導入手順
+
+1. `@supabase/supabase-js` をインストール済みです。
+2. プロジェクトルートに `.env.local` を作成しました。
+   - `NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_ANON_KEY` を貼り付けてください。
+3. `lib/supabaseClient.ts` を作成し、Supabase クライアントの初期化を行いました。
+
+### 使い方例
+
+```ts
+import { supabase } from '../lib/supabaseClient';
+
+// 例: テーブルからデータ取得
+const { data, error } = await supabase.from('your_table').select('*');
+```
+
+詳しくは [Supabase 公式ドキュメント](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs) を参照してください。
+
+# サインイン（Email + パスワード認証）
+
+このプロジェクトでは、Supabase を利用した Email + パスワード認証によるサインイン機能を実装しています。
+
+## 主なファイル
+
+- `components/SignInForm.tsx` … サインインフォーム UI
+- `hooks/useAuth.ts` … Supabase 認証用カスタムフック
+- `app/signin/page.tsx` … サインインページ
+
+## 使い方
+
+1. `/signin` ページにアクセスするとサインインフォームが表示されます。
+2. Email・パスワードを入力し「Sign In」ボタンを押すと、Supabase 経由で認証が行われます。
+
+## カスタマイズ
+
+- 認証後のリダイレクトやエラーハンドリングは `hooks/useAuth.ts` で調整してください。
+
+---
+
+### 実装方針
+
+- 認証ロジックはカスタムフック（`useAuth`）に分離し、UI コンポーネントは表示に専念しています。
+- Supabase クライアントは `lib/supabaseClient.ts` を利用しています。
+- 今後の認証方式追加や UI 変更も容易に拡張できます。
