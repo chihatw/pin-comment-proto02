@@ -319,7 +319,11 @@ function renderDeleteButton({
           ×
         </button>
       </TooltipTrigger>
-      <TooltipContent side='top' align='center'>
+      <TooltipContent
+        side='top'
+        align='center'
+        style={{ background: PRIMARY_COLOR, color: '#fff' }}
+      >
         削除
       </TooltipContent>
     </Tooltip>
