@@ -21,4 +21,15 @@ export const imageMetaRepository = {
     if (error) throw error;
     return data as ImageMeta;
   },
+  /**
+   * 指定IDの画像メタデータを取得
+   */
+  async fetchById(id: string): Promise<{ data: ImageMeta | null; error: any }> {
+    const { data, error } = await supabase
+      .from('pin_comment_image_metas')
+      .select('*')
+      .eq('id', id)
+      .single();
+    return { data: data as ImageMeta | null, error };
+  },
 };

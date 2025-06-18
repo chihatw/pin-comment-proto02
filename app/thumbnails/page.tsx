@@ -6,6 +6,7 @@ import { imageMetaRepository } from '@/repositories/imageMetaRepository';
 import { imageThumbnailRepository } from '@/repositories/imageThumbnailRepository';
 import type { ImageMeta } from '@/types/imageMeta';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -94,16 +95,11 @@ export default function ThumbnailsPage() {
       };
       await imageThumbnailRepository.create(thumbInput);
       setThumbnails((prev) => (prev.length < 2 ? [...prev, meta] : prev));
-    } catch (error) {
+    } catch {
       alert('アップロードに失敗しました');
     } finally {
       setUploading(false);
     }
-  };
-
-  // ドロップ領域のクリックでファイル選択
-  const handleDropAreaClick = () => {
-    document.getElementById('thumbnail-file-input')?.click();
   };
 
   // サムネイル削除ハンドラ
@@ -116,7 +112,7 @@ export default function ThumbnailsPage() {
         storage_path: imageMeta.storage_path,
       });
       setThumbnails((prev) => prev.filter((_, i) => i !== idx));
-    } catch (error) {
+    } catch {
       alert('削除に失敗しました');
     }
   };
@@ -164,13 +160,18 @@ export default function ThumbnailsPage() {
           </div>
         ) : hasImage ? (
           <>
-            <Image
-              src={thumbnails[idx].thumbnail_url}
-              alt='thumbnail'
-              width={THUMB_SIZE}
-              height={THUMB_SIZE}
-              className='object-contain w-full h-full rounded-lg'
-            />
+            <Link
+              href={`/image/${thumbnails[idx].id}`}
+              className='block w-full h-full'
+            >
+              <Image
+                src={thumbnails[idx].thumbnail_url}
+                alt='thumbnail'
+                width={THUMB_SIZE}
+                height={THUMB_SIZE}
+                className='object-contain w-full h-full rounded-lg'
+              />
+            </Link>
             {/* 削除ボタン */}
             <button
               type='button'
@@ -215,20 +216,18 @@ export default function ThumbnailsPage() {
 
   // 全画面でドラッグ状態を検知
   useEffect(() => {
-    const handleDragEnter = (e: DragEvent) => {
-      e.preventDefault();
+    const handleDragEnter = () => {
       dragCounter.current++;
       setIsDragActive(true);
     };
-    const handleDragLeave = (e: DragEvent) => {
-      e.preventDefault();
+    const handleDragLeave = () => {
       dragCounter.current--;
       if (dragCounter.current <= 0) {
         setIsDragActive(false);
         dragCounter.current = 0;
       }
     };
-    const handleDrop = (e: DragEvent) => {
+    const handleDrop = () => {
       dragCounter.current = 0;
       setIsDragActive(false);
     };

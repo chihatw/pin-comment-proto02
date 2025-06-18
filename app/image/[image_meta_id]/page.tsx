@@ -2,9 +2,13 @@
 
 import { CommentList } from '@/components/CommentList';
 import { ContainImage } from '@/components/ContainImage';
+import { Button } from '@/components/ui/button';
 import { useEllipseEditor } from '@/hooks/useEllipseEditor';
-import { mockImageMeta } from '@/mocks/imageMeta';
+import { imageMetaRepository } from '@/repositories/imageMetaRepository';
+import type { ImageMeta } from '@/types/imageMeta';
 import { calcContainSize } from '@/utils/calcContainSize';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -12,31 +16,21 @@ import { useEffect, useRef, useState } from 'react';
  * mocks/imageMeta.ts にある画像をアスペクト比を保って最大表示
  */
 export default function ImagePage() {
-  const meta = mockImageMeta;
+  const { image_meta_id } = useParams();
+  const [meta, setMeta] = useState<ImageMeta | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // メインカラムのサイズを取得
   const mainColRef = useRef<HTMLDivElement>(null);
   const [mainColSize, setMainColSize] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
-    function updateMainColSize() {
-      if (mainColRef.current) {
-        setMainColSize({
-          width: mainColRef.current.clientWidth,
-          height: mainColRef.current.clientHeight,
-        });
-      }
-    }
-    updateMainColSize();
-    window.addEventListener('resize', updateMainColSize);
-    return () => window.removeEventListener('resize', updateMainColSize);
-  }, []);
-
+  // metaがnullの場合は0を渡すことでフックの順序を守る
   const contain = calcContainSize(
     mainColSize.width,
     mainColSize.height,
-    meta.width,
-    meta.height
+    meta?.width ?? 0,
+    meta?.height ?? 0
   );
 
   // 楕円編集ロジックをページ側で管理
@@ -61,7 +55,48 @@ export default function ImagePage() {
     PRIMARY_COLOR,
   } = useEllipseEditor(contain.width, contain.height, []);
 
-  if (!meta) return <div>画像がありません</div>;
+  useEffect(() => {
+    console.log(mainColRef.current, mainColRef.current?.clientWidth);
+
+    function updateMainColSize() {
+      if (mainColRef.current) {
+        setMainColSize({
+          width: mainColRef.current.clientWidth,
+          height: mainColRef.current.clientHeight,
+        });
+      }
+    }
+    updateMainColSize();
+    window.addEventListener('resize', updateMainColSize);
+    return () => window.removeEventListener('resize', updateMainColSize);
+  }, [loading]);
+
+  useEffect(() => {
+    const fetchMeta = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await imageMetaRepository.fetchById(
+          image_meta_id as string
+        );
+        if (error || !data) {
+          setError('画像が見つかりません');
+          setMeta(null);
+        } else {
+          setMeta(data);
+        }
+      } catch {
+        setError('画像の取得に失敗しました');
+        setMeta(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (image_meta_id) fetchMeta();
+  }, [image_meta_id]);
+
+  if (loading) return <div>読み込み中...</div>;
+  if (error || !meta) return <div>{error || '画像がありません'}</div>;
 
   // 選択中楕円の削除
   const handleDeleteEllipse = () => {
@@ -79,8 +114,14 @@ export default function ImagePage() {
         {/* メインカラム: 画像と楕円 */}
         <div
           ref={mainColRef}
-          className='w-full h-full flex items-center justify-center'
+          className='w-full h-full flex items-center justify-center relative'
         >
+          {/* /thumbnails へのリンクボタン */}
+          <Link href='/thumbnails' className='absolute left-4 top-4 z-10'>
+            <Button type='button' variant='secondary'>
+              サムネイル一覧へ
+            </Button>
+          </Link>
           <ContainImage
             src={meta.thumbnail_url}
             alt={meta.file_name}
