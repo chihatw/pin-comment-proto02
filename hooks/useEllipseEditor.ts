@@ -67,7 +67,7 @@ export function useEllipseEditor(
 
   // 楕円の新規描画開始
   const onPointerDown = useCallback(
-    (e: React.PointerEvent<SVGSVGElement>) => {
+    (e: React.PointerEvent<SVGSVGElement>, imageMetaId: string) => {
       if (e.button !== 0) return; // 左クリックのみ
       const rect = (e.target as SVGSVGElement).getBoundingClientRect();
       const x = (e.clientX - rect.left) / width;
@@ -75,6 +75,7 @@ export function useEllipseEditor(
       dragStart.current = { x, y };
       setDraft({
         id: 'draft',
+        imageMetaId,
         centerX: x,
         centerY: y,
         rx: 0,
@@ -153,6 +154,7 @@ export function useEllipseEditor(
             id: newId,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            imageMetaId: draft.imageMetaId,
           },
         ],
         'addEllipse'

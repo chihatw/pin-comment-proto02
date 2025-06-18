@@ -56,8 +56,6 @@ export default function ImagePage() {
   } = useEllipseEditor(contain.width, contain.height, []);
 
   useEffect(() => {
-    console.log(mainColRef.current, mainColRef.current?.clientWidth);
-
     function updateMainColSize() {
       if (mainColRef.current) {
         setMainColSize({
@@ -131,6 +129,7 @@ export default function ImagePage() {
             selectedId={selectedId}
             draft={draft}
             svgRef={svgRef}
+            imageMetaId={meta.id}
             setSelectedId={setSelectedId}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}

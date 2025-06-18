@@ -8,6 +8,7 @@ const STORAGE_KEY = 'ellipses';
 
 /**
  * 楕円リストを取得
+ * @returns {Promise<Ellipse[]>}
  */
 export async function getEllipses(): Promise<Ellipse[]> {
   const json = localStorage.getItem(STORAGE_KEY);

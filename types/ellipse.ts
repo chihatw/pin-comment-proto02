@@ -10,6 +10,8 @@
 export type Ellipse = {
   /** 一意なID（uuidなど） */
   id: string;
+  /** 紐付く画像メタ情報ID（uuid、一意な文字列） */
+  imageMetaId: string;
   /** 楕円の中心X座標（画像幅に対する割合 0〜1） */
   centerX: number;
   /** 楕円の中心Y座標（画像高さに対する割合 0〜1） */

@@ -26,10 +26,15 @@ export type ContainImageProps = {
   draft?: Ellipse | null;
   /** SVG参照 */
   svgRef: React.RefObject<SVGSVGElement>;
+  /** 画像メタデータID */
+  imageMetaId: string;
   /** 楕円選択ハンドラ */
   setSelectedId: (id: string | null) => void;
   /** pointerDownハンドラ */
-  onPointerDown: (e: React.PointerEvent<SVGSVGElement>) => void;
+  onPointerDown: (
+    e: React.PointerEvent<SVGSVGElement>,
+    imageMetaId: string
+  ) => void;
   /** pointerMoveハンドラ */
   onPointerMove: (e: React.PointerEvent<SVGSVGElement>) => void;
   /** pointerUpハンドラ */
@@ -69,6 +74,7 @@ export function ContainImage({
   selectedId,
   draft,
   svgRef,
+  imageMetaId,
   setSelectedId,
   onPointerDown,
   onPointerMove,
@@ -134,7 +140,7 @@ export function ContainImage({
           if (e.target === svgRef.current) {
             setSelectedId(null);
           }
-          onPointerDown(e);
+          onPointerDown(e, imageMetaId);
         }}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

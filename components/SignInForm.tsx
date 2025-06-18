@@ -16,7 +16,6 @@ export default function SignInForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const ok = await signIn(email, password);
-    console.log({ ok });
     if (ok) {
       console.log('サインイン成功');
       router.push('/'); // サインイン成功時はトップへ遷移

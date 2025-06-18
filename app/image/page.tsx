@@ -90,6 +90,7 @@ export default function ImagePage() {
             selectedId={selectedId}
             draft={draft}
             svgRef={svgRef}
+            imageMetaId={meta.id}
             setSelectedId={setSelectedId}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
