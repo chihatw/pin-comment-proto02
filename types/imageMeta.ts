@@ -29,4 +29,6 @@ export type ImageMeta = {
   width: number;
   /** 画像の高さ（ピクセル） */
   height: number;
+  /** サムネイル画像のURL */
+  thumbnail_url: string;
 };

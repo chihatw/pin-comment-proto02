@@ -15,6 +15,8 @@ export const mockImageMeta: ImageMeta = {
   updated_at: '2025-06-14T04:15:14.618Z',
   width: 1667,
   height: 978,
+  thumbnail_url: '/screenshot 2025-06-14 13.13.45.png', // public/ 配下のパスに修正
+  // サムネイルURLは実際のアプリでは生成する必要がありますが、ここでは同じ画像を使用
 };
 
 /**
