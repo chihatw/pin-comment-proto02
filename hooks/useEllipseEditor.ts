@@ -1,10 +1,6 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  getEllipseComments,
-  saveEllipseComments,
-} from '../repositories/commentRepository';
 import { getEllipses, saveEllipses } from '../repositories/ellipseRepository';
-import type { EllipseComment } from '../types/comment';
+
 import type { Ellipse } from '../types/ellipse';
 import type { HandleDirection } from '../types/ellipseHandle';
 import { PRIMARY_COLOR } from '../utils/constants';
@@ -83,6 +79,7 @@ export function useEllipseEditor(
         index: 0, // ドラフト用の仮index
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        comment: '',
       });
     },
     [width, height]
@@ -106,42 +103,6 @@ export function useEllipseEditor(
     [width, height]
   );
 
-  // コメント状態
-  const [comments, setComments] = useState<EllipseComment[]>([]);
-
-  // コメント初期化
-  useEffect(() => {
-    getEllipseComments().then((loaded) => {
-      if (loaded && loaded.length > 0) setComments(loaded);
-    });
-  }, []);
-
-  // コメント保存（debounce）
-  const debouncedSaveComments = useRef(
-    debounce((next: EllipseComment[]) => {
-      saveEllipseComments(next);
-    }, 500)
-  ).current;
-
-  // コメント追加
-  const addComment = useCallback(
-    (ellipseId: string) => {
-      setComments((prev) => {
-        const newComment: EllipseComment = {
-          id: crypto.randomUUID(),
-          ellipseId,
-          content: '',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        const next = [...prev, newComment];
-        debouncedSaveComments(next);
-        return next;
-      });
-    },
-    [debouncedSaveComments]
-  );
-
   // 楕円の新規描画確定
   const onPointerUp = useCallback(() => {
     if (draft && draft.rx > 0.01 && draft.ry > 0.01) {
@@ -159,69 +120,37 @@ export function useEllipseEditor(
         ],
         'addEllipse'
       );
-      addComment(newId);
     }
     setDraft(null);
     dragStart.current = null;
-  }, [draft, setEllipses, addComment]);
+  }, [draft, setEllipses]);
 
   // コメント編集
   const updateComment = useCallback(
     (ellipseId: string, content: string) => {
-      setComments((prev) => {
+      setEllipses((prev) => {
         const next = prev.map((c) =>
-          c.ellipseId === ellipseId
-            ? { ...c, content, updatedAt: new Date().toISOString() }
+          c.id === ellipseId
+            ? { ...c, comment: content, updatedAt: new Date().toISOString() }
             : c
         );
-        debouncedSaveComments(next);
+        debouncedSave(next, 'updateComment');
         return next;
-      });
+      }, 'updateComment');
     },
-    [debouncedSaveComments]
+    [debouncedSave]
   );
 
-  // コメント削除（楕円削除時）
-  const removeCommentByEllipseId = useCallback(
-    (ellipseId: string) => {
-      setComments((prev) => {
-        const next = prev.filter((c) => c.ellipseId !== ellipseId);
-        debouncedSaveComments(next);
-        return next;
-      });
-    },
-    [debouncedSaveComments]
-  );
-
-  // 楕円削除時にコメントも削除
+  // 楕円の更新時にindexを振り直す
   const setEllipsesWithRenumber = useCallback(
     (updater: (prev: Ellipse[]) => Ellipse[], caller: string) => {
       setEllipses((prev) => {
         const next = renumberEllipses(updater(prev));
-        // 楕円削除分のコメントも削除
-        const removedIds = prev
-          .map((el) => el.id)
-          .filter((id) => !next.some((el) => el.id === id));
-        if (removedIds.length > 0) {
-          setComments((prevComments) => {
-            const filtered = prevComments.filter(
-              (c) => !removedIds.includes(c.ellipseId)
-            );
-            debouncedSaveComments(filtered);
-            return filtered;
-          });
-        }
         debouncedSave(next, caller);
         return next;
       }, caller);
     },
-    [
-      setEllipses,
-      renumberEllipses,
-      debouncedSave,
-      setComments,
-      debouncedSaveComments,
-    ]
+    [setEllipses, renumberEllipses, debouncedSave]
   );
 
   // 楕円選択・移動用
@@ -394,7 +323,6 @@ export function useEllipseEditor(
     onHandlePointerMove,
     onHandlePointerUp,
     svgRef,
-    comments,
     updateComment,
     PRIMARY_COLOR,
   };

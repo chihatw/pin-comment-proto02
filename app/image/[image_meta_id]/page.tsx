@@ -50,7 +50,6 @@ export default function ImagePage() {
     onHandlePointerMove,
     onHandlePointerUp,
     setEllipses,
-    comments,
     updateComment,
     PRIMARY_COLOR,
   } = useEllipseEditor(contain.width, contain.height, []);
@@ -152,7 +151,6 @@ export default function ImagePage() {
           <div className='w-full max-w-xs bg-white rounded shadow p-4'>
             <h2 className='text-lg font-bold mb-2'>コメント</h2>
             <CommentList
-              comments={comments}
               ellipses={ellipses}
               selectedId={selectedId}
               setSelectedId={setSelectedId}

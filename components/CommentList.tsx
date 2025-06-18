@@ -1,4 +1,3 @@
-import type { EllipseComment } from '@/types/comment';
 import type { Ellipse } from '@/types/ellipse';
 
 /**
@@ -12,7 +11,6 @@ import type { Ellipse } from '@/types/ellipse';
  * @param props.PRIMARY_COLOR 選択色
  */
 export type CommentListProps = {
-  comments: EllipseComment[];
   ellipses: Ellipse[];
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
@@ -22,7 +20,6 @@ export type CommentListProps = {
 };
 
 export function CommentList({
-  comments,
   ellipses,
   selectedId,
   setSelectedId,
@@ -32,27 +29,24 @@ export function CommentList({
 }: CommentListProps) {
   return (
     <ul className='space-y-1' onClick={(e) => e.stopPropagation()}>
-      {comments.length === 0 ? (
+      {ellipses.length === 0 ? (
         <li className='text-gray-400'>コメントはありません</li>
       ) : (
-        comments.map((comment) => {
-          const ellipse = ellipses.find((el) => el.id === comment.ellipseId);
+        ellipses.map((ellipse) => {
           const ellipseIndex = ellipse ? ellipse.index : '?';
           return (
             <li
-              key={comment.id}
+              key={ellipse.id}
               className={`flex items-center px-2 py-1 rounded border-2`}
               style={{
                 transition: 'background 0.2s',
                 borderColor:
-                  selectedId === comment.ellipseId
-                    ? PRIMARY_COLOR
-                    : 'transparent',
+                  selectedId === ellipse.id ? PRIMARY_COLOR : 'transparent',
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                if (selectedId !== comment.ellipseId) {
-                  setSelectedId(comment.ellipseId);
+                if (selectedId !== ellipse.id) {
+                  setSelectedId(ellipse.id);
                 }
               }}
             >
@@ -69,14 +63,12 @@ export function CommentList({
               >
                 {ellipseIndex}
               </span>
-              {selectedId === comment.ellipseId ? (
+              {selectedId === ellipse.id ? (
                 <>
                   <input
                     type='text'
-                    value={comment.content}
-                    onChange={(e) =>
-                      updateComment(comment.ellipseId, e.target.value)
-                    }
+                    value={ellipse.comment}
+                    onChange={(e) => updateComment(ellipse.id, e.target.value)}
                     placeholder='コメントを入力...'
                     className='flex-1 outline-none border-none bg-transparent px-2 py-1 rounded text-slate-500 text-sm font-mono'
                     style={{ minWidth: 0 }}
@@ -99,7 +91,7 @@ export function CommentList({
                 </>
               ) : (
                 <span className='truncate flex-1 cursor-pointer text-slate-700 font-mono text-sm whitespace-pre-line'>
-                  {comment.content || '（未入力）'}
+                  {ellipse.comment || '（未入力）'}
                 </span>
               )}
             </li>

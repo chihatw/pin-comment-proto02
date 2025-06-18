@@ -26,4 +26,6 @@ export type Ellipse = {
   updatedAt: string;
   /** 画像ごとの楕円の表示順インデックス（1始まりの連番） */
   index: number;
+  /** コメント本文 */
+  comment: string;
 };
