@@ -57,9 +57,7 @@ export default function ThumbnailsPage() {
             // アップロード中はスピナー表示（新規追加枠のみ）
             <div className='flex flex-col items-center justify-center'>
               <div className='animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent mb-2' />
-              <span className='text-blue-500 font-medium mt-2'>
-                アップロード中...
-              </span>
+              <span className='text-blue-500 font-medium mt-2'>上傳中...</span>
             </div>
           ) : (
             <span
@@ -68,8 +66,8 @@ export default function ThumbnailsPage() {
               }`}
             >
               {isDragActive
-                ? '画像をここにドロップ'
-                : '画像をここにドロップ\nまたはクリックで選択'}
+                ? '請將圖片拖曳到這裡'
+                : '請將圖片拖曳到這裡\n或點擊以選擇圖片'}
             </span>
           )}
         </div>

@@ -30,7 +30,7 @@ export function CommentList({
   return (
     <ul className='space-y-1' onClick={(e) => e.stopPropagation()}>
       {ellipses.length === 0 ? (
-        <li className='text-gray-400'>コメントはありません</li>
+        <li className='text-gray-400'>目前沒有問題</li>
       ) : (
         ellipses.map((ellipse) => {
           const ellipseIndex = ellipse ? ellipse.index : '?';
@@ -69,7 +69,7 @@ export function CommentList({
                     type='text'
                     value={ellipse.comment}
                     onChange={(e) => updateComment(ellipse.id, e.target.value)}
-                    placeholder='コメントを入力...'
+                    placeholder='輸入提問...'
                     className='flex-1 outline-none border-none bg-transparent px-2 py-1 rounded text-slate-500 text-sm font-mono'
                     style={{ minWidth: 0 }}
                     autoFocus
@@ -91,7 +91,7 @@ export function CommentList({
                 </>
               ) : (
                 <span className='truncate flex-1 cursor-pointer text-slate-700 font-mono text-sm whitespace-pre-line'>
-                  {ellipse.comment || '（未入力）'}
+                  {ellipse.comment || '（尚未輸入）'}
                 </span>
               )}
             </li>

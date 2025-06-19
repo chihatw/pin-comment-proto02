@@ -121,7 +121,7 @@ export default function ImagePage() {
           {/* /thumbnails へのリンクボタン */}
           <Link href='/thumbnails' className='absolute left-4 top-4 z-10'>
             <Button type='button' variant='secondary'>
-              サムネイル一覧へ
+              前往縮圖列表
             </Button>
           </Link>
           <ContainImage
@@ -154,7 +154,7 @@ export default function ImagePage() {
           onClick={() => setSelectedId(null)}
         >
           <div className='w-full max-w-xs bg-white rounded shadow p-4'>
-            <h2 className='text-lg font-bold mb-2'>コメント</h2>
+            <h2 className='text-lg font-bold mb-2'>請猜猜對方會問什麼問題</h2>
             <CommentList
               ellipses={ellipses}
               selectedId={selectedId}
