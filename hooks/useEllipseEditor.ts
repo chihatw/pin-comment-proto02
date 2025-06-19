@@ -36,7 +36,7 @@ export function useEllipseEditor(
   // debounce付き保存関数
   const debouncedSave = useRef(
     debounce((ellipses: Ellipse[], caller: string) => {
-      saveEllipses(ellipses, caller);
+      saveEllipses(imageMetaId, ellipses, caller);
     }, 500)
   ).current;
 

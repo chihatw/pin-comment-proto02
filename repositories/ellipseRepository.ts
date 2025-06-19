@@ -30,25 +30,26 @@ export async function getEllipses(imageMetaId: string): Promise<Ellipse[]> {
 
 /**
  * 楕円リストを保存（Supabase版: 全件入れ替え）
+ * @param imageMetaId 画像メタID（必須）
  * @param ellipses 保存する楕円リスト
  * @param caller 呼び出し元識別用ラベル
  */
 export async function saveEllipses(
+  imageMetaId: string,
   ellipses: Ellipse[],
   caller: string
 ): Promise<void> {
   // 既存データ全削除 → 新規挿入（トランザクション的な一括更新）
   // Supabaseのdelete()はWHERE句必須のため、image_meta_idごとに削除する
+  const { error: delError } = await supabase
+    .from('pin_comment_ellipses')
+    .delete()
+    .eq('image_meta_id', imageMetaId);
+  if (delError) {
+    console.error('[saveEllipses] delete error:', delError);
+    return;
+  }
   if (ellipses.length > 0) {
-    const imageMetaId = ellipses[0].imageMetaId;
-    const { error: delError } = await supabase
-      .from('pin_comment_ellipses')
-      .delete()
-      .eq('image_meta_id', imageMetaId);
-    if (delError) {
-      console.error('[saveEllipses] delete error:', delError);
-      return;
-    }
     const rows: SupabaseEllipseRow[] = ellipses.map(toSnakeCaseEllipse);
     const { error: insError } = await supabase
       .from('pin_comment_ellipses')
@@ -57,6 +58,6 @@ export async function saveEllipses(
       console.error('[saveEllipses] insert error:', insError);
       return;
     }
-    console.log(`[saveEllipses] called from: ${caller}`);
   }
+  console.log(`[saveEllipses] called from: ${caller}`);
 }
