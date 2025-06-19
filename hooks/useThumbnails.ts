@@ -1,5 +1,6 @@
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { supabase } from '@/lib/supabaseClient';
+import { saveEllipses } from '@/repositories/ellipseRepository';
 import { imageMetaRepository } from '@/repositories/imageMetaRepository';
 import { imageThumbnailRepository } from '@/repositories/imageThumbnailRepository';
 import type { ImageMeta } from '@/types/imageMeta';
@@ -91,6 +92,9 @@ export function useThumbnails() {
     if (!thumbnails[idx] || !user) return;
     const imageMeta = thumbnails[idx];
     try {
+      // 1. 楕円データを全削除
+      await saveEllipses(imageMeta.id, [], 'delete-thumbnail');
+      // 2. サムネイル・画像メタ・ストレージ画像を削除
       await imageThumbnailRepository.deleteAllRelated({
         id: imageMeta.id,
         storage_path: imageMeta.storage_path,
