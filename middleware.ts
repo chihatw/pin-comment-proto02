@@ -7,6 +7,12 @@ import { NextResponse, type NextRequest } from 'next/server';
  * サインインページはログイン済みなら / へリダイレクト
  */
 export async function middleware(request: NextRequest) {
+  // 追加: ホームページ（/）アクセス時は /thumbnails へリダイレクト
+  if (request.nextUrl.pathname === '/') {
+    const thumbnailsUrl = new URL('/thumbnails', request.url);
+    return NextResponse.redirect(thumbnailsUrl);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
