@@ -52,7 +52,12 @@ export default function ImagePage() {
     setEllipses,
     updateComment,
     PRIMARY_COLOR,
-  } = useEllipseEditor(contain.width, contain.height, []);
+  } = useEllipseEditor(
+    image_meta_id as string,
+    contain.width,
+    contain.height,
+    []
+  );
 
   useEffect(() => {
     function updateMainColSize() {

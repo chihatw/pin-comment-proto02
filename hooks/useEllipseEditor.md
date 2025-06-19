@@ -15,9 +15,9 @@
 | `draft`                | `Ellipse \| null`                                                                            | 描画中のドラフト楕円           |
 | `selectedId`           | `string \| null`                                                                             | 選択中楕円 ID                  |
 | `setSelectedId`        | `(id: string \| null) => void`                                                               | 楕円選択ハンドラ               |
-| `setEllipses`          | `(updater: (prev: Ellipse[]) => Ellipse[], caller?: string) => Promise<void>`                | 楕円リストの更新（永続化付き） |
+| `setEllipses`          | `(updater: (prev: Ellipse[]) => Ellipse[], caller: string) => void`                          | 楕円リストの更新（永続化付き） |
 | `svgRef`               | `React.RefObject<SVGSVGElement>`                                                             | SVG 要素への参照               |
-| `onPointerDown`        | `(e: React.PointerEvent<SVGSVGElement>) => void`                                             | SVG pointerDown ハンドラ       |
+| `onPointerDown`        | `(e: React.PointerEvent<SVGSVGElement>, imageMetaId: string) => void`                        | SVG pointerDown ハンドラ       |
 | `onPointerMove`        | `(e: React.PointerEvent<SVGSVGElement>) => void`                                             | SVG pointerMove ハンドラ       |
 | `onPointerUp`          | `() => void`                                                                                 | SVG pointerUp ハンドラ         |
 | `onEllipsePointerDown` | `(ellipseId: string, e: React.PointerEvent<SVGElement>) => void`                             | 楕円クリックハンドラ           |
@@ -31,6 +31,11 @@
 
 ```tsx
 import { useEllipseEditor } from '@/hooks/useEllipseEditor';
+
+const imageMetaId = '...'; // 画像メタID
+const width = 400;
+const height = 300;
+const initialEllipses = [];
 
 const {
   ellipses,
@@ -48,7 +53,7 @@ const {
   onHandlePointerDown,
   onHandlePointerMove,
   onHandlePointerUp,
-} = useEllipseEditor(width, height, initialEllipses);
+} = useEllipseEditor(imageMetaId, width, height, initialEllipses);
 ```
 
 - `ContainImage` などの描画専念コンポーネントと組み合わせて使うことを推奨します。

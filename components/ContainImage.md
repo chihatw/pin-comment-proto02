@@ -19,8 +19,9 @@
 | `selectedId`           | `string \| null`                                                                             | 選択中楕円 ID                  |
 | `draft`                | `Ellipse \| null`                                                                            | 描画中のドラフト楕円（省略可） |
 | `svgRef`               | `React.RefObject<SVGSVGElement>`                                                             | SVG 要素への参照               |
+| `imageMetaId`          | `string`                                                                                     | 画像メタデータ ID              |
 | `setSelectedId`        | `(id: string \| null) => void`                                                               | 楕円選択ハンドラ               |
-| `onPointerDown`        | `(e: React.PointerEvent<SVGSVGElement>) => void`                                             | SVG pointerDown ハンドラ       |
+| `onPointerDown`        | `(e: React.PointerEvent<SVGSVGElement>, imageMetaId: string) => void`                        | SVG pointerDown ハンドラ       |
 | `onPointerMove`        | `(e: React.PointerEvent<SVGSVGElement>) => void`                                             | SVG pointerMove ハンドラ       |
 | `onPointerUp`          | `() => void`                                                                                 | SVG pointerUp ハンドラ         |
 | `onEllipsePointerDown` | `(ellipseId: string, e: React.PointerEvent<SVGElement>) => void`                             | 楕円クリックハンドラ           |
@@ -38,8 +39,26 @@
 import { ContainImage } from '@/components/ContainImage';
 import { useEllipseEditor } from '@/hooks/useEllipseEditor';
 
-const { ellipses, draft, selectedId, setSelectedId, ...handlers } =
-  useEllipseEditor(width, height, []);
+const {
+  ellipses,
+  draft,
+  selectedId,
+  setSelectedId,
+  svgRef,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onEllipsePointerDown,
+  onEllipsePointerMove,
+  onEllipsePointerUp,
+  onHandlePointerDown,
+  onHandlePointerMove,
+  onHandlePointerUp,
+} = useEllipseEditor(imageMetaId, width, height, []);
+
+const handleDeleteEllipse = () => {
+  // 選択中楕円の削除処理
+};
 
 <ContainImage
   src={url}
@@ -49,17 +68,18 @@ const { ellipses, draft, selectedId, setSelectedId, ...handlers } =
   ellipses={ellipses}
   selectedId={selectedId}
   draft={draft}
-  svgRef={handlers.svgRef}
+  svgRef={svgRef}
+  imageMetaId={imageMetaId}
   setSelectedId={setSelectedId}
-  onPointerDown={handlers.onPointerDown}
-  onPointerMove={handlers.onPointerMove}
-  onPointerUp={handlers.onPointerUp}
-  onEllipsePointerDown={handlers.onEllipsePointerDown}
-  onEllipsePointerMove={handlers.onEllipsePointerMove}
-  onEllipsePointerUp={handlers.onEllipsePointerUp}
-  onHandlePointerDown={handlers.onHandlePointerDown}
-  onHandlePointerMove={handlers.onHandlePointerMove}
-  onHandlePointerUp={handlers.onHandlePointerUp}
+  onPointerDown={onPointerDown}
+  onPointerMove={onPointerMove}
+  onPointerUp={onPointerUp}
+  onEllipsePointerDown={onEllipsePointerDown}
+  onEllipsePointerMove={onEllipsePointerMove}
+  onEllipsePointerUp={onEllipsePointerUp}
+  onHandlePointerDown={onHandlePointerDown}
+  onHandlePointerMove={onHandlePointerMove}
+  onHandlePointerUp={onHandlePointerUp}
   onDeleteEllipse={handleDeleteEllipse}
   priority
 />;

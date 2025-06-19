@@ -16,6 +16,7 @@ import { debounce } from '../utils/debounce';
  * @param initialEllipses 初期楕円リスト
  */
 export function useEllipseEditor(
+  imageMetaId: string,
   width: number,
   height: number,
   initialEllipses: Ellipse[] = []
@@ -51,9 +52,9 @@ export function useEllipseEditor(
     [debouncedSave, renumberEllipses]
   );
 
-  // 初回マウント時にlocalStorageから取得
+  // 初回マウント時にSupabaseから取得
   useEffect(() => {
-    getEllipses().then((loaded) => {
+    getEllipses(imageMetaId).then((loaded) => {
       if (loaded && loaded.length > 0) {
         setEllipsesState(renumberEllipses(loaded));
       }

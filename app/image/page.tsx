@@ -59,7 +59,7 @@ export default function ImagePage() {
 
     updateComment,
     PRIMARY_COLOR,
-  } = useEllipseEditor(contain.width, contain.height, []);
+  } = useEllipseEditor(meta.id, contain.width, contain.height, []);
 
   if (!meta) return <div>画像がありません</div>;
 
