@@ -1,5 +1,6 @@
 'use client';
 
+import { LinkButton } from '@/components/ui/LinkButton';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { getImagePublicUrl } from '../../lib/getImagePublicUrl';
@@ -178,6 +179,14 @@ export default function ViewPage() {
   return (
     <main className='w-screen h-screen overflow-hidden bg-black'>
       <div ref={containerRef} className='w-full h-full relative'>
+        {/* /thumbnails へのリンクボタン */}
+        <LinkButton
+          href='/thumbnails'
+          variant='secondary'
+          className='absolute left-4 top-4 z-10'
+        >
+          👉縮圖列表
+        </LinkButton>
         {imageUrl && containRect ? (
           <>
             <Image

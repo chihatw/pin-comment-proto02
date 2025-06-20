@@ -1,6 +1,7 @@
 'use client';
 
 import { ThumbnailWithEllipses } from '@/components/ThumbnailWithEllipses';
+import { LinkButton } from '@/components/ui/LinkButton';
 import { useThumbnails } from '@/hooks/useThumbnails';
 import Link from 'next/link';
 import { useRef } from 'react';
@@ -115,7 +116,15 @@ export default function ThumbnailsPage() {
   };
 
   return (
-    <main className='flex flex-col items-center justify-center min-h-screen'>
+    <main className='flex flex-col items-center justify-center min-h-screen relative'>
+      {/* view へのリンクボタン */}
+      <LinkButton
+        href='/view'
+        variant='secondary'
+        className='absolute right-4 top-4 z-10'
+      >
+        👉課堂練習頁面
+      </LinkButton>
       <div className='flex gap-8'>
         {[...Array(thumbnails.length === 0 || uploading ? 1 : 2)].map(
           (_, idx) => renderThumbnailArea(idx)

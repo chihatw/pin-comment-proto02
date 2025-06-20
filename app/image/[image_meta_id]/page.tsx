@@ -2,12 +2,11 @@
 
 import { CommentList } from '@/components/CommentList';
 import { ContainImage } from '@/components/ContainImage';
-import { Button } from '@/components/ui/button';
+import { LinkButton } from '@/components/ui/LinkButton';
 import { useEllipseEditor } from '@/hooks/useEllipseEditor';
 import { imageMetaRepository } from '@/repositories/imageMetaRepository';
 import type { ImageMeta } from '@/types/imageMeta';
 import { calcContainSize } from '@/utils/calcContainSize';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
@@ -119,11 +118,13 @@ export default function ImagePage() {
           className='w-full h-full flex items-center justify-center relative'
         >
           {/* /thumbnails へのリンクボタン */}
-          <Link href='/thumbnails' className='absolute left-4 top-4 z-10'>
-            <Button type='button' variant='secondary'>
-              前往縮圖列表
-            </Button>
-          </Link>
+          <LinkButton
+            href='/thumbnails'
+            variant='secondary'
+            className='absolute left-4 top-4 z-10'
+          >
+            👉縮圖列表
+          </LinkButton>
           <ContainImage
             src={meta.thumbnail_url}
             alt={meta.file_name}
