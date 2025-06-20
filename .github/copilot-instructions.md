@@ -7,6 +7,7 @@
 # コーディングスタイル
 
 - React のフック（useState, useEffect など）は `import { useState, useEffect } from 'react'` のように個別 import し、`useState()` のように記述してください。`React.useState()` のような記法は使わないでください。
+- **React フックはクライアント・コンポーネントでしか使えません。React フックを使用する場合は、ファイル先頭に `'use client';` を必ず明記してください。**
 
 # プロジェクト概要
 

@@ -67,4 +67,24 @@ export const imageThumbnailRepository = {
       .remove([imageMeta.storage_path]);
     if (storageError) throw storageError;
   },
+
+  /**
+   * 指定ユーザーのサムネイル一覧を取得
+   * @param userId ユーザーID
+   * @returns ImageThumbnail[]
+   */
+  async fetchByUserId(userId: string): Promise<ImageThumbnail[]> {
+    const { data, error } = await supabase
+      .from('pin_comment_image_thumbnails')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    // スネークケース→キャメルケース変換
+    // 型安全のため any で受けて変換
+    const { fromSnakeCaseImageThumbnail } = await import(
+      '../utils/imageThumbnailCaseConvert'
+    );
+    return (data as any[]).map(fromSnakeCaseImageThumbnail);
+  },
 };

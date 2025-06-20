@@ -32,3 +32,19 @@ export type ImageMeta = {
   /** サムネイル画像のURL */
   thumbnail_url: string;
 };
+
+/**
+ * アプリ内で利用するキャメルケース型
+ */
+export type ImageMetaCamel = {
+  id: string;
+  storagePath: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+  updatedAt: string;
+  width: number;
+  height: number;
+  thumbnailUrl: string;
+};
