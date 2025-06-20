@@ -1,10 +1,8 @@
 'use client';
 
-// /admin/page.tsx
-// 管理者用ページ（現状は空）
-
 import { useEffect, useState } from 'react';
 import { EllipseTable } from '../../components/EllipseTable';
+import { ImageWithEllipses } from '../../components/ImageWithEllipses';
 import {
   Select,
   SelectContent,
@@ -23,6 +21,7 @@ import type { ImageThumbnail } from '../../types/imageThumbnail';
 import { User } from '../../types/user';
 
 export default function AdminPage() {
+  // ユーザー一覧取得
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUid, setSelectedUid] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -56,7 +55,7 @@ export default function AdminPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // selectedUid変更時にサムネイル取得
+  // ユーザー選択時にサムネイル一覧を取得
   useEffect(() => {
     if (!selectedUid) {
       setThumbnails([]);
@@ -75,7 +74,7 @@ export default function AdminPage() {
       .finally(() => setThumbLoading(false));
   }, [selectedUid]);
 
-  // selectedImageMetaId変更時にimageMeta取得
+  // image_meta_id選択時にimageMetaを取得
   useEffect(() => {
     if (!selectedImageMetaId) {
       setImageMeta(null);
@@ -93,7 +92,7 @@ export default function AdminPage() {
       .finally(() => setImageMetaLoading(false));
   }, [selectedImageMetaId]);
 
-  // imageMeta変更時に画像URL取得
+  // imageMeta変更時に画像URLを取得
   useEffect(() => {
     if (!imageMeta || !imageMeta.storagePath) {
       setImageUrl(null);
@@ -104,7 +103,7 @@ export default function AdminPage() {
     getImagePublicUrl(bucket, imageMeta.storagePath).then(setImageUrl);
   }, [imageMeta]);
 
-  // selectedImageMetaId変更時に楕円リスト取得
+  // image_meta_id選択時に楕円リストを取得
   useEffect(() => {
     if (!selectedImageMetaId) {
       setEllipses([]);
@@ -185,7 +184,7 @@ export default function AdminPage() {
           選択中の image_meta_id: {selectedImageMetaId}
         </div>
       )}
-      {/* imageMetaの生データ表示 */}
+      {/* imageMetaの画像・楕円リスト */}
       {selectedImageMetaId && (
         <div className='mt-4'>
           <div className='font-semibold mb-1'>imageMetaデータ:</div>
@@ -196,16 +195,11 @@ export default function AdminPage() {
               imageMeta取得エラー: {imageMetaError}
             </div>
           ) : imageMeta ? (
-            // 画像表示のみ
-            imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={imageMeta.fileName}
-                className='max-w-xs max-h-80 border rounded shadow mb-2'
-              />
-            ) : (
-              <div className='text-gray-400'>画像URLなし</div>
-            )
+            <ImageWithEllipses
+              imageUrl={imageUrl}
+              fileName={imageMeta.fileName}
+              ellipses={ellipses}
+            />
           ) : (
             <div className='text-gray-400'>データなし</div>
           )}
@@ -217,7 +211,6 @@ export default function AdminPage() {
           />
         </div>
       )}
-      {/* ここに管理者用機能を追加予定 */}
     </main>
   );
 }
