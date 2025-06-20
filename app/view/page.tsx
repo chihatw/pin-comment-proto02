@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { getImagePublicUrl } from '../../lib/getImagePublicUrl';
 import { supabase } from '../../lib/supabaseClient';
@@ -44,13 +45,7 @@ export default function ViewPage() {
   );
   const [imageMeta, setImageMeta] = useState<PinCommentImageMeta | null>(null);
   const [ellipses, setEllipses] = useState<PinCommentEllipse[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [imgSize, setImgSize] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
 
   // pin_comment_admin_state の購読＆初回取得
   useEffect(() => {
@@ -60,8 +55,9 @@ export default function ViewPage() {
       .eq('id', PIN_COMMENT_ADMIN_STATE_ID)
       .single()
       .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else setAdminState(data);
+        // if (error) setError(error.message);
+        // else setAdminState(data);
+        if (!error) setAdminState(data);
       });
 
     const channel = supabase
@@ -122,27 +118,6 @@ export default function ViewPage() {
         else setEllipses(data as PinCommentEllipse[]);
       });
   }, [adminState?.selected_image_meta_id, adminState?.selected_ellipse_ids]);
-
-  // 画像の表示サイズを取得
-  useEffect(() => {
-    if (!imageUrl) {
-      setImgSize(null);
-      return;
-    }
-    const updateSize = () => {
-      if (imgRef.current) {
-        setImgSize({
-          width: imgRef.current.width,
-          height: imgRef.current.height,
-        });
-      }
-    };
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => {
-      window.removeEventListener('resize', updateSize);
-    };
-  }, [imageUrl]);
 
   // 画像のobject-contain表示領域サイズ・オフセットを計算
   function getContainRect(
@@ -205,12 +180,15 @@ export default function ViewPage() {
       <div ref={containerRef} className='w-full h-full relative'>
         {imageUrl && containRect ? (
           <>
-            <img
+            <Image
               src={imageUrl}
               alt={imageMeta?.file_name ?? ''}
               className='w-full h-full object-contain select-none pointer-events-none'
               draggable={false}
               style={{ position: 'absolute', left: 0, top: 0 }}
+              fill
+              sizes='100vw'
+              priority
             />
             {ellipses && ellipses.length > 0 && imageMeta && (
               <svg

@@ -1,5 +1,6 @@
 // components/ImageWithEllipses.tsx
 'use client';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import type { Ellipse } from '../types/ellipse';
 
@@ -36,16 +37,12 @@ export function ImageWithEllipses({
     };
     const img = imgRef.current;
     img.addEventListener('load', handleLoad);
-    // 既に読み込み済みの場合
     if (img.complete) handleLoad();
     return () => {
       img.removeEventListener('load', handleLoad);
     };
   }, [imageUrl]);
 
-  // 画像の表示サイズ（ピクセル）を取得し、SVGも同じサイズで重ねる
-  // ただし、imgの表示サイズ（width/height）はCSSで制限されているため、
-  // naturalWidth/naturalHeight ではなく、実際の表示サイズ（imgRef.current.width/height）を常に使う
   useEffect(() => {
     if (!imgRef.current) return;
     const updateSize = () => {
@@ -56,12 +53,12 @@ export function ImageWithEllipses({
         });
       }
     };
-    // 画像のロード時・リサイズ時に更新
-    imgRef.current.addEventListener('load', updateSize);
+    const img = imgRef.current;
+    img.addEventListener('load', updateSize);
     window.addEventListener('resize', updateSize);
     updateSize();
     return () => {
-      imgRef.current?.removeEventListener('load', updateSize);
+      img.removeEventListener('load', updateSize);
       window.removeEventListener('resize', updateSize);
     };
   }, [imageUrl]);
@@ -70,12 +67,16 @@ export function ImageWithEllipses({
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {imageUrl ? (
         <>
-          <img
+          <Image
             ref={imgRef}
             src={imageUrl}
             alt={fileName}
             className='max-w-[40rem] max-h-[40rem] border rounded shadow mb-2'
             style={{ display: 'block' }}
+            width={size?.width || 100}
+            height={size?.height || 100}
+            sizes='(max-width: 640px) 100vw, 40rem'
+            priority
           />
           {size && size.width > 0 && size.height > 0 && (
             <svg
