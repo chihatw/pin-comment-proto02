@@ -14,6 +14,7 @@ import { getImagePublicUrl } from '../../lib/getImagePublicUrl';
 import { getEllipses } from '../../repositories/ellipseRepository';
 import { imageMetaRepository } from '../../repositories/imageMetaRepository';
 import { imageThumbnailRepository } from '../../repositories/imageThumbnailRepository';
+import { updatePinCommentAdminState } from '../../repositories/pinCommentAdminStateRepository';
 import { fetchAllUsers } from '../../repositories/userRepository';
 import type { Ellipse } from '../../types/ellipse';
 import type { ImageMetaCamel } from '../../types/imageMeta';
@@ -29,7 +30,7 @@ export default function AdminPage() {
 
   // サムネイル関連
   const [thumbnails, setThumbnails] = useState<ImageThumbnail[]>([]);
-  const [selectedImageMetaId, setSelectedImageMetaId] = useState<
+  const [selectedImageMetaId, _setSelectedImageMetaId] = useState<
     string | undefined
   >(undefined);
   const [thumbLoading, setThumbLoading] = useState(false);
@@ -48,7 +49,7 @@ export default function AdminPage() {
   const [ellipsesLoading, setEllipsesLoading] = useState(false);
   const [ellipsesError, setEllipsesError] = useState<string | null>(null);
   // 選択中の楕円IDリスト
-  const [selectedEllipseIds, setSelectedEllipseIds] = useState<string[]>([]);
+  const [selectedEllipseIds, _setSelectedEllipseIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchAllUsers()
@@ -118,6 +119,33 @@ export default function AdminPage() {
       .catch((e) => setEllipsesError(e.message))
       .finally(() => setEllipsesLoading(false));
   }, [selectedImageMetaId]);
+
+  // SupabaseへselectedImageMetaIdを反映
+  const setSelectedImageMetaId = async (id: string | undefined) => {
+    _setSelectedImageMetaId(id);
+    // 楕円IDリストもリセット
+    _setSelectedEllipseIds([]);
+    try {
+      await updatePinCommentAdminState({
+        selected_image_meta_id: id ?? null,
+        selected_ellipse_ids: [],
+      });
+    } catch (e) {
+      // 必要に応じてエラー処理
+      console.error('Supabase更新エラー(selectedImageMetaId):', e);
+    }
+  };
+
+  // SupabaseへselectedEllipseIdsを反映
+  const setSelectedEllipseIds = async (ids: string[]) => {
+    _setSelectedEllipseIds(ids);
+    try {
+      await updatePinCommentAdminState({ selected_ellipse_ids: ids });
+    } catch (e) {
+      // 必要に応じてエラー処理
+      console.error('Supabase更新エラー(selectedEllipseIds):', e);
+    }
+  };
 
   return (
     <main className='p-8'>
