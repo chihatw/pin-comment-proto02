@@ -7,12 +7,18 @@ interface Props {
   imageUrl: string | null;
   fileName: string;
   ellipses: Ellipse[];
+  selectedEllipseIds: string[];
 }
 
 /**
  * 画像上にSVGで楕円を重ねて描画するコンポーネント
  */
-export function ImageWithEllipses({ imageUrl, fileName, ellipses }: Props) {
+export function ImageWithEllipses({
+  imageUrl,
+  fileName,
+  ellipses,
+  selectedEllipseIds,
+}: Props) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
@@ -93,7 +99,7 @@ export function ImageWithEllipses({ imageUrl, fileName, ellipses }: Props) {
                   rx={e.rx * size.width}
                   ry={e.ry * size.height}
                   fill='rgba(255,0,0,0)'
-                  stroke='red'
+                  stroke={selectedEllipseIds.includes(e.id) ? 'red' : 'gray'}
                   strokeWidth={2}
                 >
                   <title>{e.comment}</title>

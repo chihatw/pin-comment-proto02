@@ -47,6 +47,8 @@ export default function AdminPage() {
   const [ellipses, setEllipses] = useState<Ellipse[]>([]);
   const [ellipsesLoading, setEllipsesLoading] = useState(false);
   const [ellipsesError, setEllipsesError] = useState<string | null>(null);
+  // 選択中の楕円IDリスト
+  const [selectedEllipseIds, setSelectedEllipseIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchAllUsers()
@@ -141,11 +143,6 @@ export default function AdminPage() {
           </Select>
         )}
       </div>
-      {selectedUid && (
-        <div className='mt-2 text-sm text-gray-600'>
-          選択中のuid: {selectedUid}
-        </div>
-      )}
       {/* サムネイルセレクタ */}
       {selectedUid && (
         <div className='mb-4 mt-6'>
@@ -179,36 +176,40 @@ export default function AdminPage() {
           )}
         </div>
       )}
-      {selectedImageMetaId && (
-        <div className='mt-2 text-sm text-gray-600'>
-          選択中の image_meta_id: {selectedImageMetaId}
-        </div>
-      )}
       {/* imageMetaの画像・楕円リスト */}
       {selectedImageMetaId && (
-        <div className='mt-4'>
-          <div className='font-semibold mb-1'>imageMetaデータ:</div>
-          {imageMetaLoading ? (
-            <div>imageMeta取得中...</div>
-          ) : imageMetaError ? (
-            <div className='text-red-500'>
-              imageMeta取得エラー: {imageMetaError}
+        <div className='mt-4 '>
+          <div className='flex gap-4'>
+            {/* 左カラム: サムネイル画像 */}
+            <div className='flex-1 flex items-center justify-center min-h-[180px]'>
+              {imageMetaLoading ? (
+                <div>imageMeta取得中...</div>
+              ) : imageMetaError ? (
+                <div className='text-red-500'>
+                  imageMeta取得エラー: {imageMetaError}
+                </div>
+              ) : imageMeta ? (
+                <ImageWithEllipses
+                  imageUrl={imageUrl}
+                  fileName={imageMeta.fileName}
+                  ellipses={ellipses}
+                  selectedEllipseIds={selectedEllipseIds}
+                />
+              ) : (
+                <div className='text-gray-400'>データなし</div>
+              )}
             </div>
-          ) : imageMeta ? (
-            <ImageWithEllipses
-              imageUrl={imageUrl}
-              fileName={imageMeta.fileName}
-              ellipses={ellipses}
-            />
-          ) : (
-            <div className='text-gray-400'>データなし</div>
-          )}
-          {/* 楕円リストテーブル表示 */}
-          <EllipseTable
-            ellipses={ellipses}
-            loading={ellipsesLoading}
-            error={ellipsesError}
-          />
+            {/* 右カラム: 楕円リストテーブル */}
+            <div className='flex-1'>
+              <EllipseTable
+                ellipses={ellipses}
+                loading={ellipsesLoading}
+                error={ellipsesError}
+                selectedEllipseIds={selectedEllipseIds}
+                setSelectedEllipseIds={setSelectedEllipseIds}
+              />
+            </div>
+          </div>
         </div>
       )}
     </main>
