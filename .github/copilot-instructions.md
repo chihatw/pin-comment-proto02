@@ -88,3 +88,12 @@ function fromSnakeCaseEllipse(row: SupabaseEllipseRow): Ellipse {
 - データベース側の仕様（例: Supabase の delete()が WHERE 句必須など）や、永続化方式の切り替えを見据えて一括処理が望ましい場合。
 
 > 例: 楕円リスト（Ellipse[]）のように「画像ごとに紐づく全件を一括で保存・入れ替えたい」ケースでは、既存データを全削除 → 新規挿入するトランザクション的な一括更新を採用する。
+
+# 画像サイズ・リサイズに関する注意
+
+- 画像やキャンバス上で座標計算・SVG 重ね描画などを行う場合、**必ず naturalWidth/naturalHeight（画像の自然サイズ）を使うこと**。
+  - `img.width`/`img.height` など「表示上のサイズ（CSS ピクセル）」は Tailwind の `max-w`/`max-h` などの制約下で意図しない値になることがある。
+  - ウィンドウリサイズ時に `img.width`/`img.height` を使うと、繰り返しリサイズでどんどん小さくなる等のバグが発生しやすい。
+- SVG の viewBox や楕円・矩形の座標計算も、**naturalWidth/naturalHeight を基準にすること**。
+- 画像の naturalWidth/naturalHeight は `img` の `onLoad` イベントで取得できる。
+- この注意は、画像アノテーション・画像上の図形描画・サムネイル生成など、画像サイズを扱う全ての実装で徹底すること。

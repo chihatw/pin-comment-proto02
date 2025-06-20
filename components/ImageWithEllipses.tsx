@@ -1,5 +1,6 @@
 // components/ImageWithEllipses.tsx
 'use client';
+import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import type { Ellipse } from '../types/ellipse';
@@ -43,26 +44,6 @@ export function ImageWithEllipses({
     };
   }, [imageUrl]);
 
-  useEffect(() => {
-    if (!imgRef.current) return;
-    const updateSize = () => {
-      if (imgRef.current) {
-        setSize({
-          width: imgRef.current.width,
-          height: imgRef.current.height,
-        });
-      }
-    };
-    const img = imgRef.current;
-    img.addEventListener('load', updateSize);
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => {
-      img.removeEventListener('load', updateSize);
-      window.removeEventListener('resize', updateSize);
-    };
-  }, [imageUrl]);
-
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {imageUrl ? (
@@ -101,7 +82,7 @@ export function ImageWithEllipses({
                   ry={e.ry * size.height}
                   fill='rgba(255,0,0,0)'
                   stroke={selectedEllipseIds.includes(e.id) ? 'red' : 'gray'}
-                  strokeWidth={2}
+                  strokeWidth={ELLIPSE_STROKE_WIDTH_RATIO * size.width}
                 >
                   <title>{e.comment}</title>
                 </ellipse>

@@ -50,7 +50,7 @@ export function EllipseTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead></TableHead> {/* チェックボックス用 */}
+            <TableHead /> {/* チェックボックス用 */}
             <TableHead>index</TableHead>
             <TableHead>comment</TableHead>
           </TableRow>

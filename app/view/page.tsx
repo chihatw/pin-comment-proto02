@@ -185,7 +185,7 @@ export default function ViewPage() {
           variant='secondary'
           className='absolute left-4 top-4 z-10'
         >
-          👉縮圖列表
+          👉返回首頁
         </LinkButton>
         {imageUrl && containRect ? (
           <>
