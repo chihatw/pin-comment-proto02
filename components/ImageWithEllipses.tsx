@@ -1,7 +1,9 @@
 // components/ImageWithEllipses.tsx
 'use client';
+import { updatePinCommentAdminState } from '@/repositories/pinCommentAdminStateRepository';
 import { calcContainSize } from '@/utils/calcContainSize';
 import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
+import { debounce } from '@/utils/debounce';
 import { useEffect, useRef, useState } from 'react';
 import type { Ellipse } from '../types/ellipse';
 
@@ -26,9 +28,9 @@ export function ImageWithEllipses({
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
   );
-  const [blur, setBlur] = useState(1);
-  const [gradient, setGradient] = useState(0.75);
-  const [positionY, setPositionY] = useState(0.5); // 0-1
+  const [blur, setBlurState] = useState(1);
+  const [gradient, setGradientState] = useState(0.75);
+  const [positionY, setPositionYState] = useState(0.5); // 0-1
   const [imgLoaded, setImgLoaded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -109,6 +111,28 @@ export function ImageWithEllipses({
     };
     return cleanup;
   }, [imageUrl, size, blur, gradient, positionY]);
+
+  // 永続化付きsetBlur
+  const setBlur = (v: number) => {
+    setBlurState(v);
+    updatePinCommentAdminState({ blur: v });
+  };
+
+  // 永続化付きsetGradient
+  const setGradient = (v: number) => {
+    setGradientState(v);
+    updatePinCommentAdminState({ gradient: v });
+  };
+
+  // 永続化付きsetPositionY（debounce 500ms）
+  const debouncedUpdatePositionY = debounce((v: number) => {
+    updatePinCommentAdminState({ position_y: v });
+  }, 500);
+
+  const setPositionY = (v: number) => {
+    setPositionYState(v);
+    debouncedUpdatePositionY(v);
+  };
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>

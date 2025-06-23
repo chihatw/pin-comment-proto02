@@ -5,6 +5,9 @@ export type PinCommentAdminState = {
   id: string;
   selected_image_meta_id: string | null;
   selected_ellipse_ids: string[] | null;
+  blur: number | null;
+  gradient: number | null;
+  position_y: number | null;
   updated_at: string;
 };
 
@@ -28,7 +31,11 @@ export async function updatePinCommentAdminState(
   params: Partial<
     Pick<
       PinCommentAdminState,
-      'selected_image_meta_id' | 'selected_ellipse_ids'
+      | 'selected_image_meta_id'
+      | 'selected_ellipse_ids'
+      | 'blur'
+      | 'gradient'
+      | 'position_y'
     >
   >
 ): Promise<PinCommentAdminState | null> {
