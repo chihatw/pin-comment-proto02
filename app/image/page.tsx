@@ -61,7 +61,7 @@ export default function ImagePage() {
     PRIMARY_COLOR,
   } = useEllipseEditor(meta.id, contain.width, contain.height, []);
 
-  if (!meta) return <div>画像がありません</div>;
+  if (!meta) return <div>沒有圖片</div>;
 
   // 選択中楕円の削除
   const handleDeleteEllipse = () => {

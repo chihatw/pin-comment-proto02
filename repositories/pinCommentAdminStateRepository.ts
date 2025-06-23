@@ -1,15 +1,6 @@
+import { PinCommentAdminState } from '@/types/pinCommentAdminState';
 import { supabase } from '../lib/supabaseClient';
 import { PIN_COMMENT_ADMIN_STATE_ID } from '../utils/constants';
-
-export type PinCommentAdminState = {
-  id: string;
-  selected_image_meta_id: string | null;
-  selected_ellipse_ids: string[] | null;
-  blur: number | null;
-  gradient: number | null;
-  position_y: number | null;
-  updated_at: string;
-};
 
 /**
  * 管理用状態を取得

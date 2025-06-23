@@ -97,7 +97,7 @@ export default function ImagePage() {
   }, [image_meta_id]);
 
   if (loading) return <div>読み込み中...</div>;
-  if (error || !meta) return <div>{error || '画像がありません'}</div>;
+  if (error || !meta) return <div>{error || '沒有圖片'}</div>;
 
   // 選択中楕円の削除
   const handleDeleteEllipse = () => {

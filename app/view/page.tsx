@@ -1,7 +1,6 @@
 'use client';
 
 import { LinkButton } from '@/components/ui/LinkButton';
-import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { getImagePublicUrl } from '../../lib/getImagePublicUrl';
 import { supabase } from '../../lib/supabaseClient';
@@ -47,6 +46,9 @@ export default function ViewPage() {
   const [imageMeta, setImageMeta] = useState<PinCommentImageMeta | null>(null);
   const [ellipses, setEllipses] = useState<PinCommentEllipse[] | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  // チルトシフト用canvas描画
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   // pin_comment_admin_state の購読＆初回取得
   useEffect(() => {
@@ -176,6 +178,79 @@ export default function ViewPage() {
     );
   }
 
+  // チルトシフト・フィルター描画
+  useEffect(() => {
+    if (!imageUrl || !imageMeta || !containRect) return;
+    let fxCanvas:
+      | (HTMLCanvasElement & { draw: (texture: unknown) => unknown })
+      | undefined;
+    let texture: object | undefined;
+    let img: HTMLImageElement | null = null;
+    let script: HTMLScriptElement | null = null;
+    let cleanup = () => {};
+    script = document.createElement('script');
+    script.src = '/glfx.js';
+    script.onload = () => {
+      img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        setImgLoaded(true);
+        if (!img) return;
+        try {
+          // @ts-expect-error: fx is loaded dynamically from glfx.js
+          fxCanvas = window.fx.canvas();
+          // @ts-expect-error: fx is loaded dynamically from glfx.js
+          texture = fxCanvas.texture(img);
+          // adminStateの値を使う（nullならデフォルト値）
+          const blur = adminState?.blur ?? 1;
+          const gradient = adminState?.gradient ?? 0.75;
+          const positionY = adminState?.position_y ?? 0.5;
+          const startY = positionY * img.height;
+          const endY = positionY * img.height;
+          // @ts-expect-error: fx is loaded dynamically from glfx.js
+          fxCanvas
+            .draw(texture)
+            .tiltShift(
+              0,
+              startY,
+              img.width,
+              endY,
+              blur * 20,
+              gradient * img.height
+            )
+            .update();
+        } catch {
+          setImgLoaded(false);
+          return;
+        }
+        if (canvasRef.current) {
+          const ctx = canvasRef.current.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(
+              0,
+              0,
+              canvasRef.current.width,
+              canvasRef.current.height
+            );
+            ctx.drawImage(
+              fxCanvas as HTMLCanvasElement,
+              0,
+              0,
+              canvasRef.current.width,
+              canvasRef.current.height
+            );
+          }
+        }
+      };
+      img.src = imageUrl;
+    };
+    document.body.appendChild(script);
+    cleanup = () => {
+      if (script) document.body.removeChild(script);
+    };
+    return cleanup;
+  }, [imageUrl, imageMeta, containRect, adminState]);
+
   return (
     <main className='w-screen h-screen overflow-hidden bg-black'>
       <div ref={containerRef} className='w-full h-full relative'>
@@ -189,16 +264,28 @@ export default function ViewPage() {
         </LinkButton>
         {imageUrl && containRect ? (
           <>
-            <Image
-              src={imageUrl}
-              alt={imageMeta?.file_name ?? ''}
-              className='w-full h-full object-contain select-none pointer-events-none'
-              draggable={false}
-              style={{ position: 'absolute', left: 0, top: 0 }}
-              fill
-              sizes='100vw'
-              priority
+            {/* チルトシフトフィルター済みcanvas */}
+            <canvas
+              ref={canvasRef}
+              width={containRect.width}
+              height={containRect.height}
+              style={{
+                position: 'absolute',
+                left: containRect.offsetX,
+                top: containRect.offsetY,
+                width: containRect.width,
+                height: containRect.height,
+                zIndex: 1,
+                border: 'none',
+                background: '#eee',
+                display: 'block',
+              }}
             />
+            {!imgLoaded && (
+              <div className='absolute left-0 top-0 w-full h-full flex items-center justify-center bg-white/70 z-10'>
+                画像読み込み中...
+              </div>
+            )}
             {ellipses && ellipses.length > 0 && imageMeta && (
               <svg
                 width={containRect.width}
@@ -211,6 +298,7 @@ export default function ViewPage() {
                   width: containRect.width,
                   height: containRect.height,
                   pointerEvents: 'none',
+                  zIndex: 2,
                 }}
               >
                 {ellipses.map((e) => (
@@ -236,7 +324,7 @@ export default function ViewPage() {
           </>
         ) : (
           <div className='w-full h-full flex items-center justify-center text-gray-400'>
-            画像がありません
+            沒有圖片
           </div>
         )}
       </div>

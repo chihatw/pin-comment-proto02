@@ -124,10 +124,10 @@ export function ImageWithEllipses({
     updatePinCommentAdminState({ gradient: v });
   };
 
-  // 永続化付きsetPositionY（debounce 500ms）
+  // 永続化付きsetPositionY（debounce 100ms）
   const debouncedUpdatePositionY = debounce((v: number) => {
     updatePinCommentAdminState({ position_y: v });
-  }, 500);
+  }, 100);
 
   const setPositionY = (v: number) => {
     setPositionYState(v);
