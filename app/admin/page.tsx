@@ -219,7 +219,6 @@ export default function AdminPage() {
               ) : imageMeta ? (
                 <ImageWithEllipses
                   imageUrl={imageUrl}
-                  fileName={imageMeta.fileName}
                   ellipses={ellipses}
                   selectedEllipseIds={selectedEllipseIds}
                   width={imageMeta.width}

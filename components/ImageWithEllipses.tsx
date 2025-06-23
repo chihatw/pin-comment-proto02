@@ -7,7 +7,6 @@ import type { Ellipse } from '../types/ellipse';
 
 interface Props {
   imageUrl: string | null;
-  fileName: string;
   ellipses: Ellipse[];
   selectedEllipseIds: string[];
   width: number;
@@ -19,13 +18,11 @@ interface Props {
  */
 export function ImageWithEllipses({
   imageUrl,
-  fileName,
   ellipses,
   selectedEllipseIds,
   width,
   height,
 }: Props) {
-  const imgRef = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
   );
@@ -47,8 +44,10 @@ export function ImageWithEllipses({
 
   useEffect(() => {
     if (!imageUrl || !size) return;
-    let fxCanvas: any = null;
-    let texture: any = null;
+    let fxCanvas:
+      | (HTMLCanvasElement & { draw: (texture: unknown) => unknown })
+      | undefined;
+    let texture: object | undefined;
     let img: HTMLImageElement | null = null;
     let script: HTMLScriptElement | null = null;
     let cleanup = () => {};
@@ -61,11 +60,13 @@ export function ImageWithEllipses({
         setImgLoaded(true);
         if (!img) return;
         try {
-          // @ts-ignore
+          // @ts-expect-error: fx is loaded dynamically from glfx.js
           fxCanvas = window.fx.canvas();
+          // @ts-expect-error: fx is loaded dynamically from glfx.js
           texture = fxCanvas.texture(img);
           const startY = positionY * img.height;
           const endY = positionY * img.height;
+          // @ts-expect-error: fx is loaded dynamically from glfx.js
           fxCanvas
             .draw(texture)
             .tiltShift(
@@ -77,7 +78,7 @@ export function ImageWithEllipses({
               gradient * img.height
             )
             .update();
-        } catch (e) {
+        } catch {
           setImgLoaded(false);
           return;
         }
@@ -91,7 +92,7 @@ export function ImageWithEllipses({
               canvasRef.current.height
             );
             ctx.drawImage(
-              fxCanvas,
+              fxCanvas as HTMLCanvasElement,
               0,
               0,
               canvasRef.current.width,
