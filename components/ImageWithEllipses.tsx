@@ -29,7 +29,7 @@ export function ImageWithEllipses({
     null
   );
   const [blur, setBlurState] = useState(1);
-  const [gradient, setGradientState] = useState(0.75);
+  const [gradient, setGradientState] = useState(1);
   const [positionY, setPositionYState] = useState(0.5); // 0-1
   const [imgLoaded, setImgLoaded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
