@@ -222,6 +222,8 @@ export default function AdminPage() {
                   fileName={imageMeta.fileName}
                   ellipses={ellipses}
                   selectedEllipseIds={selectedEllipseIds}
+                  width={imageMeta.width}
+                  height={imageMeta.height}
                 />
               ) : (
                 <div className='text-gray-400'>データなし</div>

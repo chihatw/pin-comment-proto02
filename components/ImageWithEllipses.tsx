@@ -1,5 +1,6 @@
 // components/ImageWithEllipses.tsx
 'use client';
+import { calcContainSize } from '@/utils/calcContainSize';
 import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -10,6 +11,8 @@ interface Props {
   fileName: string;
   ellipses: Ellipse[];
   selectedEllipseIds: string[];
+  width: number;
+  height: number;
 }
 
 /**
@@ -20,29 +23,23 @@ export function ImageWithEllipses({
   fileName,
   ellipses,
   selectedEllipseIds,
+  width,
+  height,
 }: Props) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
   );
 
+  // 最大サイズ（40rem = 640px）
+  const MAX_W = 640;
+  const MAX_H = 640;
+
   useEffect(() => {
-    if (!imgRef.current) return;
-    const handleLoad = () => {
-      if (imgRef.current) {
-        setSize({
-          width: imgRef.current.naturalWidth,
-          height: imgRef.current.naturalHeight,
-        });
-      }
-    };
-    const img = imgRef.current;
-    img.addEventListener('load', handleLoad);
-    if (img.complete) handleLoad();
-    return () => {
-      img.removeEventListener('load', handleLoad);
-    };
-  }, [imageUrl]);
+    if (!width || !height) return;
+    const contained = calcContainSize(MAX_W, MAX_H, width, height);
+    setSize(contained);
+  }, [width, height]);
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
