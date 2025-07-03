@@ -213,24 +213,34 @@ export default function ViewPage() {
                   pointerEvents: 'none',
                 }}
               >
-                {ellipses.map((e) => (
-                  <ellipse
-                    key={e.id}
-                    cx={e.center_x * imageMeta.width}
-                    cy={e.center_y * imageMeta.height}
-                    rx={e.rx * imageMeta.width}
-                    ry={e.ry * imageMeta.height}
-                    fill='rgba(255,0,0,0)'
-                    stroke={
-                      adminState?.selected_ellipse_ids?.includes(e.id)
-                        ? PRIMARY_COLOR
-                        : 'transparent'
-                    }
-                    strokeWidth={ELLIPSE_STROKE_WIDTH_RATIO * containRect.width}
-                  >
-                    <title>{e.comment}</title>
-                  </ellipse>
-                ))}
+                {ellipses.map((e) => {
+                  // スケール比を計算して線の太さを調整
+                  const scaleX = containRect.width / imageMeta.width;
+                  const scaleY = containRect.height / imageMeta.height;
+                  const avgScale = (scaleX + scaleY) / 2;
+                  // viewBox座標系での適切な線幅を計算（表示上8pxになるように）
+                  const adjustedStrokeWidth =
+                    (containRect.width * ELLIPSE_STROKE_WIDTH_RATIO) / avgScale;
+
+                  return (
+                    <ellipse
+                      key={e.id}
+                      cx={e.center_x * imageMeta.width}
+                      cy={e.center_y * imageMeta.height}
+                      rx={e.rx * imageMeta.width}
+                      ry={e.ry * imageMeta.height}
+                      fill='rgba(255,0,0,0)'
+                      stroke={
+                        adminState?.selected_ellipse_ids?.includes(e.id)
+                          ? PRIMARY_COLOR
+                          : 'transparent'
+                      }
+                      strokeWidth={adjustedStrokeWidth}
+                    >
+                      <title>{e.comment}</title>
+                    </ellipse>
+                  );
+                })}
               </svg>
             )}
           </>
