@@ -1,14 +1,13 @@
 // components/ImageWithEllipses.tsx
 'use client';
-import { updatePinCommentAdminState } from '@/repositories/pinCommentAdminStateRepository';
 import { calcContainSize } from '@/utils/calcContainSize';
 import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
-import { debounce } from '@/utils/debounce';
 import { useEffect, useRef, useState } from 'react';
 import type { Ellipse } from '../types/ellipse';
 
 interface Props {
   imageUrl: string | null;
+  fileName: string;
   ellipses: Ellipse[];
   selectedEllipseIds: string[];
   width: number;
@@ -20,17 +19,19 @@ interface Props {
  */
 export function ImageWithEllipses({
   imageUrl,
+  fileName,
   ellipses,
   selectedEllipseIds,
   width,
   height,
 }: Props) {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
   );
-  const [blur, setBlurState] = useState(1);
-  const [gradient, setGradientState] = useState(1);
-  const [positionY, setPositionYState] = useState(0.5); // 0-1
+  const [blur, setBlur] = useState(1);
+  const [gradient, setGradient] = useState(0.75);
+  const [positionY, setPositionY] = useState(0.5); // 0-1
   const [imgLoaded, setImgLoaded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -46,10 +47,8 @@ export function ImageWithEllipses({
 
   useEffect(() => {
     if (!imageUrl || !size) return;
-    let fxCanvas:
-      | (HTMLCanvasElement & { draw: (texture: unknown) => unknown })
-      | undefined;
-    let texture: object | undefined;
+    let fxCanvas: any = null;
+    let texture: any = null;
     let img: HTMLImageElement | null = null;
     let script: HTMLScriptElement | null = null;
     let cleanup = () => {};
@@ -62,13 +61,11 @@ export function ImageWithEllipses({
         setImgLoaded(true);
         if (!img) return;
         try {
-          // @ts-expect-error: fx is loaded dynamically from glfx.js
+          // @ts-ignore
           fxCanvas = window.fx.canvas();
-          // @ts-expect-error: fx is loaded dynamically from glfx.js
           texture = fxCanvas.texture(img);
           const startY = positionY * img.height;
           const endY = positionY * img.height;
-          // @ts-expect-error: fx is loaded dynamically from glfx.js
           fxCanvas
             .draw(texture)
             .tiltShift(
@@ -80,7 +77,7 @@ export function ImageWithEllipses({
               gradient * img.height
             )
             .update();
-        } catch {
+        } catch (e) {
           setImgLoaded(false);
           return;
         }
@@ -94,7 +91,7 @@ export function ImageWithEllipses({
               canvasRef.current.height
             );
             ctx.drawImage(
-              fxCanvas as HTMLCanvasElement,
+              fxCanvas,
               0,
               0,
               canvasRef.current.width,
@@ -111,28 +108,6 @@ export function ImageWithEllipses({
     };
     return cleanup;
   }, [imageUrl, size, blur, gradient, positionY]);
-
-  // 永続化付きsetBlur
-  const setBlur = (v: number) => {
-    setBlurState(v);
-    updatePinCommentAdminState({ blur: v });
-  };
-
-  // 永続化付きsetGradient
-  const setGradient = (v: number) => {
-    setGradientState(v);
-    updatePinCommentAdminState({ gradient: v });
-  };
-
-  // 永続化付きsetPositionY（debounce 100ms）
-  const debouncedUpdatePositionY = debounce((v: number) => {
-    updatePinCommentAdminState({ position_y: v });
-  }, 100);
-
-  const setPositionY = (v: number) => {
-    setPositionYState(v);
-    debouncedUpdatePositionY(v);
-  };
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>

@@ -1,6 +1,12 @@
-import { PinCommentAdminState } from '@/types/pinCommentAdminState';
 import { supabase } from '../lib/supabaseClient';
 import { PIN_COMMENT_ADMIN_STATE_ID } from '../utils/constants';
+
+export type PinCommentAdminState = {
+  id: string;
+  selected_image_meta_id: string | null;
+  selected_ellipse_ids: string[] | null;
+  updated_at: string;
+};
 
 /**
  * 管理用状態を取得
@@ -22,11 +28,7 @@ export async function updatePinCommentAdminState(
   params: Partial<
     Pick<
       PinCommentAdminState,
-      | 'selected_image_meta_id'
-      | 'selected_ellipse_ids'
-      | 'blur'
-      | 'gradient'
-      | 'position_y'
+      'selected_image_meta_id' | 'selected_ellipse_ids'
     >
   >
 ): Promise<PinCommentAdminState | null> {

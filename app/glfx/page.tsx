@@ -13,10 +13,8 @@ export default function GlfxTiltShiftPage() {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
-    let fxCanvas:
-      | (HTMLCanvasElement & { draw: (texture: unknown) => unknown })
-      | null = null;
-    let texture: object | null = null;
+    let fxCanvas: any = null;
+    let texture: any = null;
     let img: HTMLImageElement | null = null;
     let script: HTMLScriptElement | null = null;
     let cleanup = () => {};
@@ -32,18 +30,15 @@ export default function GlfxTiltShiftPage() {
         setImgLoaded(true);
         if (!img) return;
         try {
-          // @ts-expect-error: fx is loaded dynamically from glfx.js
+          // @ts-ignore
           fxCanvas = window.fx.canvas();
-          // @ts-expect-error: fx is loaded dynamically from glfx.js
           texture = fxCanvas.texture(img);
           const startY = positionY * img.height;
           const endY = positionY * img.height;
-          if (!fxCanvas) return;
-          (
-            fxCanvas.draw(texture) as {
-              tiltShift: (...args: unknown[]) => { update: () => void };
-            }
-          )
+          // const startY = (positionY - gradient / 2) * img.height;
+          // const endY = (positionY + gradient / 2) * img.height;
+          fxCanvas
+            .draw(texture)
             .tiltShift(
               0,
               startY,
@@ -53,10 +48,12 @@ export default function GlfxTiltShiftPage() {
               gradient * img.height
             )
             .update();
-        } catch {
+        } catch (e) {
+          console.error('glfx.js エラー:', e);
           setImgLoaded(false);
           return;
         }
+        // canvasRef.current に描画
         if (canvasRef.current) {
           const ctx = canvasRef.current.getContext('2d');
           if (ctx) {
@@ -66,7 +63,6 @@ export default function GlfxTiltShiftPage() {
               canvasRef.current.width,
               canvasRef.current.height
             );
-            if (!fxCanvas) return;
             ctx.drawImage(
               fxCanvas,
               0,
