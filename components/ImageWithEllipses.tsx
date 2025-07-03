@@ -2,6 +2,7 @@
 'use client';
 import { calcContainSize } from '@/utils/calcContainSize';
 import { ELLIPSE_STROKE_WIDTH_RATIO } from '@/utils/constants';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import type { Ellipse } from '../types/ellipse';
 
@@ -29,11 +30,6 @@ export function ImageWithEllipses({
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
   );
-  const [blur, setBlur] = useState(1);
-  const [gradient, setGradient] = useState(0.75);
-  const [positionY, setPositionY] = useState(0.5); // 0-1
-  const [imgLoaded, setImgLoaded] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // 最大サイズ（40rem = 640px）
   const MAX_W = 640;
@@ -45,190 +41,51 @@ export function ImageWithEllipses({
     setSize(contained);
   }, [width, height]);
 
-  useEffect(() => {
-    if (!imageUrl || !size) return;
-    let fxCanvas: any = null;
-    let texture: any = null;
-    let img: HTMLImageElement | null = null;
-    let script: HTMLScriptElement | null = null;
-    let cleanup = () => {};
-    script = document.createElement('script');
-    script.src = '/glfx.js';
-    script.onload = () => {
-      img = new window.Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        setImgLoaded(true);
-        if (!img) return;
-        try {
-          // @ts-ignore
-          fxCanvas = window.fx.canvas();
-          texture = fxCanvas.texture(img);
-          const startY = positionY * img.height;
-          const endY = positionY * img.height;
-          fxCanvas
-            .draw(texture)
-            .tiltShift(
-              0,
-              startY,
-              img.width,
-              endY,
-              blur * 20,
-              gradient * img.height
-            )
-            .update();
-        } catch (e) {
-          setImgLoaded(false);
-          return;
-        }
-        if (canvasRef.current) {
-          const ctx = canvasRef.current.getContext('2d');
-          if (ctx) {
-            ctx.clearRect(
-              0,
-              0,
-              canvasRef.current.width,
-              canvasRef.current.height
-            );
-            ctx.drawImage(
-              fxCanvas,
-              0,
-              0,
-              canvasRef.current.width,
-              canvasRef.current.height
-            );
-          }
-        }
-      };
-      img.src = imageUrl;
-    };
-    document.body.appendChild(script);
-    cleanup = () => {
-      if (script) document.body.removeChild(script);
-    };
-    return cleanup;
-  }, [imageUrl, size, blur, gradient, positionY]);
-
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
-      {imageUrl && size ? (
+      {imageUrl ? (
         <>
-          <div className='flex items-start gap-8'>
-            <div className='relative'>
-              <canvas
-                ref={canvasRef}
-                width={size.width}
-                height={size.height}
-                style={{
-                  border: '1px solid #ccc',
-                  background: '#eee',
-                  display: 'block',
-                }}
-              />
-              {!imgLoaded && (
-                <div className='absolute left-0 top-0 w-full h-full flex items-center justify-center bg-white/70'>
-                  画像読み込み中...
-                </div>
-              )}
-              {size && size.width > 0 && size.height > 0 && (
-                <svg
-                  width={size.width}
-                  height={size.height}
-                  viewBox={`0 0 ${size.width} ${size.height}`}
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    width: '100%',
-                    height: '100%',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  {ellipses.map((e) => (
-                    <ellipse
-                      key={e.id}
-                      cx={e.centerX * size.width}
-                      cy={e.centerY * size.height}
-                      rx={e.rx * size.width}
-                      ry={e.ry * size.height}
-                      fill='rgba(255,0,0,0)'
-                      stroke={
-                        selectedEllipseIds.includes(e.id) ? 'red' : 'gray'
-                      }
-                      strokeWidth={ELLIPSE_STROKE_WIDTH_RATIO * size.width}
-                    >
-                      <title>{e.comment}</title>
-                    </ellipse>
-                  ))}
-                </svg>
-              )}
-            </div>
-            <div
-              className='flex flex-col items-center'
-              style={{ height: size.height, width: '48px' }}
+          <Image
+            ref={imgRef}
+            src={imageUrl}
+            alt={fileName}
+            className='max-w-[40rem] max-h-[40rem] border rounded shadow mb-2'
+            style={{ display: 'block' }}
+            width={size?.width || 100}
+            height={size?.height || 100}
+            sizes='(max-width: 640px) 100vw, 40rem'
+            priority
+          />
+          {size && size.width > 0 && size.height > 0 && (
+            <svg
+              width={size.width}
+              height={size.height}
+              viewBox={`0 0 ${size.width} ${size.height}`}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                width: '100%',
+                height: '100%',
+                pointerEvents: 'none',
+              }}
             >
-              <input
-                type='range'
-                min={0}
-                max={1}
-                step={0.01}
-                value={positionY}
-                onChange={(e) => setPositionY(Number(e.target.value))}
-                style={{
-                  writingMode: 'vertical-lr',
-                  height: size.height,
-                  width: '32px',
-                }}
-                className='slider-vertical'
-              />
-              <span
-                className='mt-2 text-xs text-gray-500'
-                style={{
-                  width: '48px',
-                  textAlign: 'center',
-                  display: 'inline-block',
-                }}
-              >
-                {positionY}
-              </span>
-            </div>
-          </div>
-          <div className='flex gap-8 mt-8'>
-            <div>
-              <label>Blur: {blur}</label>
-              <div className='flex items-center gap-4 mt-2'>
-                {[0, 0.25, 0.5, 0.75, 1].map((v) => (
-                  <label key={v} className='flex items-center gap-1'>
-                    <input
-                      type='radio'
-                      name='blur'
-                      value={v}
-                      checked={blur === v}
-                      onChange={() => setBlur(v)}
-                    />
-                    {v}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label>Gradient: {gradient}</label>
-              <div className='flex items-center gap-4 mt-2'>
-                {[0, 0.25, 0.5, 0.75, 1].map((v) => (
-                  <label key={v} className='flex items-center gap-1'>
-                    <input
-                      type='radio'
-                      name='gradient'
-                      value={v}
-                      checked={gradient === v}
-                      onChange={() => setGradient(v)}
-                    />
-                    {v}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
+              {ellipses.map((e) => (
+                <ellipse
+                  key={e.id}
+                  cx={e.centerX * size.width}
+                  cy={e.centerY * size.height}
+                  rx={e.rx * size.width}
+                  ry={e.ry * size.height}
+                  fill='rgba(255,0,0,0)'
+                  stroke={selectedEllipseIds.includes(e.id) ? 'red' : 'gray'}
+                  strokeWidth={ELLIPSE_STROKE_WIDTH_RATIO * size.width}
+                >
+                  <title>{e.comment}</title>
+                </ellipse>
+              ))}
+            </svg>
+          )}
         </>
       ) : (
         <div className='text-gray-400'>画像URLなし</div>
