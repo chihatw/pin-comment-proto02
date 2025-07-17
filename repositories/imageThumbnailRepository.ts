@@ -77,8 +77,8 @@ export const imageThumbnailRepository = {
     const { data, error } = await supabase
       .from('pin_comment_image_thumbnails')
       .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true })
+      .eq('user_id', userId);
     if (error) throw error;
     // スネークケース→キャメルケース変換
     // 型安全のため any で受けて変換

@@ -20,6 +20,7 @@ import type { Ellipse } from '../../types/ellipse';
 import type { ImageMetaCamel } from '../../types/imageMeta';
 import type { ImageThumbnail } from '../../types/imageThumbnail';
 import { User } from '../../types/user';
+import { formatDateToJapanese } from '../../utils/dateFormat';
 
 export default function AdminPage() {
   // ユーザー一覧取得
@@ -195,7 +196,7 @@ export default function AdminPage() {
                 {thumbnails.map((thumb) =>
                   thumb.imageMetaId ? (
                     <SelectItem key={thumb.id} value={thumb.imageMetaId}>
-                      {thumb.imageMetaId}
+                      {formatDateToJapanese(thumb.createdAt)}
                     </SelectItem>
                   ) : null
                 )}
