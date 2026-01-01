@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from 'next/server';
  * 未ログイン時は /signin へリダイレクト
  * サインインページはログイン済みなら / へリダイレクト
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 追加: ホームページ（/）アクセス時は /thumbnails へリダイレクト
   if (request.nextUrl.pathname === '/') {
     const thumbnailsUrl = new URL('/thumbnails', request.url);
