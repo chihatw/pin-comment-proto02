@@ -1,11 +1,11 @@
 import { useEllipses } from '@/hooks/useEllipses';
-import type { ImageMeta } from '@/types/imageMeta';
+import { Database } from '@/types/supabase';
 import { PRIMARY_COLOR } from '@/utils/constants';
 import Image from 'next/image';
 import React from 'react';
 
 interface ThumbnailWithEllipsesProps {
-  imageMeta: ImageMeta;
+  imageMeta: Database['public']['Tables']['pin_comment_image_metas']['Row'];
   thumbnailWidth: number;
   thumbnailHeight: number;
 }

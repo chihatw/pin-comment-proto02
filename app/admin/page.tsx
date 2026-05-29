@@ -159,12 +159,12 @@ export default function AdminPage() {
           <div className='text-red-500'>ユーザー取得エラー: {error}</div>
         ) : (
           <Select value={selectedUid ?? ''} onValueChange={setSelectedUid}>
-            <SelectTrigger className='min-w-[200px]'>
+            <SelectTrigger className='min-w-50'>
               <SelectValue placeholder='ユーザーを選択してください' />
             </SelectTrigger>
             <SelectContent>
               {users.map((user) => (
-                <SelectItem key={user.uid} value={user.uid}>
+                <SelectItem key={user.userId} value={user.userId}>
                   {user.display}
                 </SelectItem>
               ))}
@@ -198,7 +198,7 @@ export default function AdminPage() {
                     <SelectItem key={thumb.id} value={thumb.imageMetaId}>
                       {formatDateToJapanese(thumb.createdAt)}
                     </SelectItem>
-                  ) : null
+                  ) : null,
                 )}
               </SelectContent>
             </Select>

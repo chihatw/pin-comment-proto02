@@ -5,7 +5,7 @@ import { ContainImage } from '@/components/ContainImage';
 import { LinkButton } from '@/components/ui/LinkButton';
 import { useEllipseEditor } from '@/hooks/useEllipseEditor';
 import { imageMetaRepository } from '@/repositories/imageMetaRepository';
-import type { ImageMeta } from '@/types/imageMeta';
+import { Database } from '@/types/supabase';
 import { calcContainSize } from '@/utils/calcContainSize';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -16,7 +16,9 @@ import { useEffect, useRef, useState } from 'react';
  */
 export default function ImagePage() {
   const { image_meta_id } = useParams();
-  const [meta, setMeta] = useState<ImageMeta | null>(null);
+  const [meta, setMeta] = useState<
+    Database['public']['Tables']['pin_comment_image_metas']['Row'] | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +31,7 @@ export default function ImagePage() {
     mainColSize.width,
     mainColSize.height,
     meta?.width ?? 0,
-    meta?.height ?? 0
+    meta?.height ?? 0,
   );
 
   // 楕円編集ロジックをページ側で管理
@@ -55,7 +57,7 @@ export default function ImagePage() {
     image_meta_id as string,
     contain.width,
     contain.height,
-    []
+    [],
   );
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function ImagePage() {
       setError(null);
       try {
         const { data, error } = await imageMetaRepository.fetchById(
-          image_meta_id as string
+          image_meta_id as string,
         );
         if (error || !data) {
           setError('画像が見つかりません');
@@ -104,7 +106,7 @@ export default function ImagePage() {
     if (!selectedId) return;
     setEllipses(
       (prev) => prev.filter((el) => el.id !== selectedId),
-      'ImagePage:handleDeleteEllipse'
+      'ImagePage:handleDeleteEllipse',
     );
     setSelectedId(null);
   };

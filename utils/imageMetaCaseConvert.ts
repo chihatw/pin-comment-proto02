@@ -1,10 +1,13 @@
 // utils/imageMetaCaseConvert.ts
-import type { ImageMeta, ImageMetaCamel } from '../types/imageMeta';
+import { Database } from '@/types/supabase';
+import type { ImageMetaCamel } from '../types/imageMeta';
 
 /**
  * スネークケース（DB行）→キャメルケース（アプリ用）
  */
-export function fromSnakeCaseImageMeta(row: ImageMeta): ImageMetaCamel {
+export function fromSnakeCaseImageMeta(
+  row: Database['public']['Tables']['pin_comment_image_metas']['Row'],
+): ImageMetaCamel {
   return {
     id: row.id,
     storagePath: row.storage_path,
@@ -22,7 +25,9 @@ export function fromSnakeCaseImageMeta(row: ImageMeta): ImageMetaCamel {
 /**
  * キャメルケース（アプリ用）→スネークケース（DB行）
  */
-export function toSnakeCaseImageMeta(meta: ImageMetaCamel): ImageMeta {
+export function toSnakeCaseImageMeta(
+  meta: ImageMetaCamel,
+): Database['public']['Tables']['pin_comment_image_metas']['Row'] {
   return {
     id: meta.id,
     storage_path: meta.storagePath,

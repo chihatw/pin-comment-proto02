@@ -1,51 +1,27 @@
 'use client';
 
 import { LinkButton } from '@/components/ui/LinkButton';
+import { Database } from '@/types/supabase';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { getImagePublicUrl } from '../../lib/getImagePublicUrl';
 import { supabase } from '../../lib/supabaseClient';
-import type { PinCommentAdminState } from '../../types/pinCommentAdminState';
 import {
   ELLIPSE_STROKE_WIDTH_RATIO,
   PIN_COMMENT_ADMIN_STATE_ID,
   PRIMARY_COLOR,
 } from '../../utils/constants';
 
-// pin_comment_image_metas テーブルの型
-export type PinCommentImageMeta = {
-  id: string;
-  storage_path: string;
-  file_name: string;
-  mime_type: string;
-  size: number;
-  created_at: string;
-  updated_at: string;
-  width: number;
-  height: number;
-  thumbnail_url: string;
-};
-
-// pin_comment_ellipses テーブルの型
-export type PinCommentEllipse = {
-  id: string;
-  image_meta_id: string;
-  center_x: number;
-  center_y: number;
-  rx: number;
-  ry: number;
-  created_at: string;
-  updated_at: string;
-  index: number;
-  comment: string;
-};
-
 export default function ViewPage() {
-  const [adminState, setAdminState] = useState<PinCommentAdminState | null>(
-    null
-  );
-  const [imageMeta, setImageMeta] = useState<PinCommentImageMeta | null>(null);
-  const [ellipses, setEllipses] = useState<PinCommentEllipse[] | null>(null);
+  const [adminState, setAdminState] = useState<
+    Database['public']['Tables']['pin_comment_admin_state']['Row'] | null
+  >(null);
+  const [imageMeta, setImageMeta] = useState<
+    Database['public']['Tables']['pin_comment_image_metas']['Row'] | null
+  >(null);
+  const [ellipses, setEllipses] = useState<
+    Database['public']['Tables']['pin_comment_ellipses']['Row'][] | null
+  >(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   // pin_comment_admin_state の購読＆初回取得
@@ -72,8 +48,11 @@ export default function ViewPage() {
           filter: `id=eq.${PIN_COMMENT_ADMIN_STATE_ID}`,
         },
         (payload) => {
-          if (payload.new) setAdminState(payload.new as PinCommentAdminState);
-        }
+          if (payload.new)
+            setAdminState(
+              payload.new as Database['public']['Tables']['pin_comment_admin_state']['Row'],
+            );
+        },
       )
       .subscribe();
     return () => {
@@ -100,11 +79,11 @@ export default function ViewPage() {
           setImageMeta(null);
           setImageUrl(null);
         } else {
-          setImageMeta(data as PinCommentImageMeta);
+          setImageMeta(data);
           // バケット名は固定（例: 'pin-comment-images'）
           const url = await getImagePublicUrl(
             'pin-comment-images',
-            data.storage_path
+            data.storage_path,
           );
           setImageUrl(url);
         }
@@ -116,7 +95,7 @@ export default function ViewPage() {
       .order('index', { ascending: true })
       .then(({ data, error }) => {
         if (error || !data) setEllipses(null);
-        else setEllipses(data as PinCommentEllipse[]);
+        else setEllipses(data);
       });
   }, [adminState?.selected_image_meta_id, adminState?.selected_ellipse_ids]);
 
@@ -125,7 +104,7 @@ export default function ViewPage() {
     containerW: number,
     containerH: number,
     imageW: number,
-    imageH: number
+    imageH: number,
   ) {
     const containerRatio = containerW / containerH;
     const imageRatio = imageW / imageH;
@@ -172,7 +151,7 @@ export default function ViewPage() {
       containerSize.width,
       containerSize.height,
       imageMeta.width,
-      imageMeta.height
+      imageMeta.height,
     );
   }
 

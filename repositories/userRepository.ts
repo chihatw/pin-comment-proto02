@@ -1,24 +1,20 @@
 // repositories/userRepository.ts
+import { Database } from '@/types/supabase';
 import { supabase } from '../lib/supabaseClient';
 import { User } from '../types/user';
 
-// Supabaseのusersテーブルの行型
-export interface SupabaseUserRow {
-  uid: string;
-  display: string;
-  created_at: string;
-}
-
-export function fromSnakeCaseUser(row: SupabaseUserRow): User {
+export function fromSnakeCaseUser(
+  row: Database['public']['Tables']['profiles']['Row'],
+): User {
   return {
-    uid: row.uid,
+    userId: row.user_id,
     display: row.display,
     createdAt: row.created_at,
   };
 }
 
 export async function fetchAllUsers(): Promise<User[]> {
-  const { data, error } = await supabase.from('users').select('*');
+  const { data, error } = await supabase.from('profiles').select('*');
   if (error) throw error;
-  return (data as SupabaseUserRow[]).map(fromSnakeCaseUser);
+  return data.map(fromSnakeCaseUser);
 }

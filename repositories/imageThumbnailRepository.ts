@@ -11,20 +11,18 @@ export const imageThumbnailRepository = {
    * @returns 作成されたImageThumbnail
    */
   async create(
-    thumbnail: Omit<ImageThumbnail, 'id' | 'createdAt'>
-  ): Promise<ImageThumbnail> {
+    thumbnail: Omit<ImageThumbnail, 'id' | 'createdAt'>,
+  ): Promise<void> {
     // キャメルケース→スネークケース変換
     const dbInput = {
       user_id: thumbnail.userId,
       image_meta_id: thumbnail.imageMetaId,
     };
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('pin_comment_image_thumbnails')
-      .insert([dbInput])
-      .select('*') // selectの引数を'*'に修正
-      .single();
+      .insert([dbInput]);
+
     if (error) throw error;
-    return data as ImageThumbnail;
   },
 
   /**
@@ -82,9 +80,8 @@ export const imageThumbnailRepository = {
     if (error) throw error;
     // スネークケース→キャメルケース変換
     // 型安全のため any で受けて変換
-    const { fromSnakeCaseImageThumbnail } = await import(
-      '../utils/imageThumbnailCaseConvert'
-    );
-    return (data as any[]).map(fromSnakeCaseImageThumbnail);
+    const { fromSnakeCaseImageThumbnail } =
+      await import('../utils/imageThumbnailCaseConvert');
+    return data.map(fromSnakeCaseImageThumbnail);
   },
 };

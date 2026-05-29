@@ -1,0 +1,1439 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
+  }
+  public: {
+    Tables: {
+      article_marks: {
+        Row: {
+          articleId: number
+          created_at: string
+          end: number
+          id: number
+          line: number
+          start: number
+        }
+        Insert: {
+          articleId: number
+          created_at?: string
+          end: number
+          id?: number
+          line: number
+          start: number
+        }
+        Update: {
+          articleId?: number
+          created_at?: string
+          end?: number
+          id?: number
+          line?: number
+          start?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_marks_articleid_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_marks_articleid_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      article_recorded_assignments: {
+        Row: {
+          articleId: number
+          audioPath: string
+          created_at: string
+          id: number
+          line: number
+        }
+        Insert: {
+          articleId: number
+          audioPath: string
+          created_at?: string
+          id?: number
+          line: number
+        }
+        Update: {
+          articleId?: number
+          audioPath?: string
+          created_at?: string
+          id?: number
+          line?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_article_recorded_assinments_articleId_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_article_recorded_assinments_articleId_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      articles: {
+        Row: {
+          audioPath: string
+          created_at: string
+          date: string
+          id: number
+          isArchived: boolean
+          isShowAccents: boolean
+          title: string
+          uid: string
+        }
+        Insert: {
+          audioPath: string
+          created_at?: string
+          date: string
+          id?: number
+          isArchived?: boolean
+          isShowAccents?: boolean
+          title: string
+          uid: string
+        }
+        Update: {
+          audioPath?: string
+          created_at?: string
+          date?: string
+          id?: number
+          isArchived?: boolean
+          isShowAccents?: boolean
+          title?: string
+          uid?: string
+        }
+        Relationships: []
+      }
+      dictation_articles: {
+        Row: {
+          assignment_id: string
+          audio_path_full: string | null
+          created_at: string
+          id: string
+          seq: number
+          subtitle: string
+        }
+        Insert: {
+          assignment_id: string
+          audio_path_full?: string | null
+          created_at?: string
+          id?: string
+          seq: number
+          subtitle?: string
+        }
+        Update: {
+          assignment_id?: string
+          audio_path_full?: string | null
+          created_at?: string
+          id?: string
+          seq?: number
+          subtitle?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_assignments: {
+        Row: {
+          created_at: string
+          due_at: string | null
+          id: string
+          published_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          published_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          published_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dictation_journals: {
+        Row: {
+          article_id: string
+          body: string
+          cloze_spans: Json
+          created_at: string
+          id: string
+          locked: boolean
+          rating_score: number
+          self_award: Database["public"]["Enums"]["self_award_t"]
+        }
+        Insert: {
+          article_id: string
+          body: string
+          cloze_spans?: Json
+          created_at?: string
+          id?: string
+          locked?: boolean
+          rating_score?: number
+          self_award?: Database["public"]["Enums"]["self_award_t"]
+        }
+        Update: {
+          article_id?: string
+          body?: string
+          cloze_spans?: Json
+          created_at?: string
+          id?: string
+          locked?: boolean
+          rating_score?: number
+          self_award?: Database["public"]["Enums"]["self_award_t"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_journals_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: true
+            referencedRelation: "dictation_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_mvjs: {
+        Row: {
+          created_at: string
+          due_at: string
+          id: string
+          image_url: string | null
+          published_at: string | null
+          reason: string | null
+          scope: Database["public"]["Enums"]["mvj_scope_t"]
+          title: string
+          user_id: string
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          due_at: string
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          reason?: string | null
+          scope?: Database["public"]["Enums"]["mvj_scope_t"]
+          title: string
+          user_id: string
+          window_end: string
+          window_start: string
+        }
+        Update: {
+          created_at?: string
+          due_at?: string
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          reason?: string | null
+          scope?: Database["public"]["Enums"]["mvj_scope_t"]
+          title?: string
+          user_id?: string
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      dictation_power_index_daily: {
+        Row: {
+          consecutive_idle_days: number
+          created_at: string
+          day: string
+          score: number
+          state: Database["public"]["Enums"]["dictation_power_index_state_t"]
+          user_id: string
+        }
+        Insert: {
+          consecutive_idle_days: number
+          created_at?: string
+          day: string
+          score: number
+          state: Database["public"]["Enums"]["dictation_power_index_state_t"]
+          user_id: string
+        }
+        Update: {
+          consecutive_idle_days?: number
+          created_at?: string
+          day?: string
+          score?: number
+          state?: Database["public"]["Enums"]["dictation_power_index_state_t"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dictation_power_indices: {
+        Row: {
+          current_score: number
+          state: Database["public"]["Enums"]["dictation_power_index_state_t"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_score?: number
+          state?: Database["public"]["Enums"]["dictation_power_index_state_t"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_score?: number
+          state?: Database["public"]["Enums"]["dictation_power_index_state_t"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dictation_sentences: {
+        Row: {
+          article_id: string
+          audio_path: string | null
+          content: string
+          created_at: string
+          id: string
+          seq: number
+        }
+        Insert: {
+          article_id: string
+          audio_path?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          seq: number
+        }
+        Update: {
+          article_id?: string
+          audio_path?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          seq?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_sentences_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_submissions: {
+        Row: {
+          ai_feedback_md: string | null
+          answer: string
+          created_at: string
+          elapsed_ms_since_first_play: number
+          elapsed_ms_since_item_view: number
+          id: string
+          plays_count: number
+          self_assessed_comprehension: number
+          sentence_id: string
+          teacher_feedback_md: string | null
+        }
+        Insert: {
+          ai_feedback_md?: string | null
+          answer: string
+          created_at?: string
+          elapsed_ms_since_first_play?: number
+          elapsed_ms_since_item_view?: number
+          id?: string
+          plays_count?: number
+          self_assessed_comprehension?: number
+          sentence_id: string
+          teacher_feedback_md?: string | null
+        }
+        Update: {
+          ai_feedback_md?: string | null
+          answer?: string
+          created_at?: string
+          elapsed_ms_since_first_play?: number
+          elapsed_ms_since_item_view?: number
+          id?: string
+          plays_count?: number
+          self_assessed_comprehension?: number
+          sentence_id?: string
+          teacher_feedback_md?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_submissions_sentence_id_fkey"
+            columns: ["sentence_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_sentences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_submissions_sentence_id_fkey"
+            columns: ["sentence_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_sentences_view"
+            referencedColumns: ["sentence_id"]
+          },
+          {
+            foreignKeyName: "dictation_submissions_sentence_id_fkey"
+            columns: ["sentence_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_submissions_view"
+            referencedColumns: ["sentence_id"]
+          },
+        ]
+      }
+      dictation_tag_master: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          norm_label: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          norm_label?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          norm_label?: string | null
+        }
+        Relationships: []
+      }
+      dictation_teacher_feedback_tags: {
+        Row: {
+          created_at: string
+          id: string
+          submission_id: string
+          tag_master_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          submission_id: string
+          tag_master_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          submission_id?: string
+          tag_master_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_teacher_feedback_tags_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_sentences_view"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "dictation_teacher_feedback_tags_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_teacher_feedback_tags_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_submissions_view"
+            referencedColumns: ["submission_id"]
+          },
+          {
+            foreignKeyName: "dtft_tag_master_fkey"
+            columns: ["tag_master_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_tag_master"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mirror_workout_results: {
+        Row: {
+          correctRatio: number
+          created_at: string
+          id: number
+          items: string
+          laps: number[]
+          selectedNumbers: number[]
+          totalTime: number
+          uid: string
+        }
+        Insert: {
+          correctRatio: number
+          created_at?: string
+          id?: number
+          items: string
+          laps: number[]
+          selectedNumbers: number[]
+          totalTime: number
+          uid: string
+        }
+        Update: {
+          correctRatio?: number
+          created_at?: string
+          id?: number
+          items?: string
+          laps?: number[]
+          selectedNumbers?: number[]
+          totalTime?: number
+          uid?: string
+        }
+        Relationships: []
+      }
+      pin_comment_admin_state: {
+        Row: {
+          blur: number | null
+          gradient: number | null
+          id: string
+          position_y: number | null
+          selected_ellipse_ids: string[] | null
+          selected_image_meta_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          blur?: number | null
+          gradient?: number | null
+          id?: string
+          position_y?: number | null
+          selected_ellipse_ids?: string[] | null
+          selected_image_meta_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          blur?: number | null
+          gradient?: number | null
+          id?: string
+          position_y?: number | null
+          selected_ellipse_ids?: string[] | null
+          selected_image_meta_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pin_comment_ellipses: {
+        Row: {
+          center_x: number
+          center_y: number
+          comment: string
+          created_at: string
+          id: string
+          image_meta_id: string
+          index: number
+          rx: number
+          ry: number
+          updated_at: string
+        }
+        Insert: {
+          center_x: number
+          center_y: number
+          comment?: string
+          created_at: string
+          id: string
+          image_meta_id: string
+          index: number
+          rx: number
+          ry: number
+          updated_at: string
+        }
+        Update: {
+          center_x?: number
+          center_y?: number
+          comment?: string
+          created_at?: string
+          id?: string
+          image_meta_id?: string
+          index?: number
+          rx?: number
+          ry?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pin_comment_ellipses_image_meta_id_fkey"
+            columns: ["image_meta_id"]
+            isOneToOne: false
+            referencedRelation: "pin_comment_image_metas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pin_comment_image_metas: {
+        Row: {
+          created_at: string
+          file_name: string
+          height: number
+          id: string
+          mime_type: string
+          size: number
+          storage_path: string
+          thumbnail_url: string
+          updated_at: string
+          width: number
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          height: number
+          id?: string
+          mime_type: string
+          size: number
+          storage_path: string
+          thumbnail_url: string
+          updated_at?: string
+          width: number
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          height?: number
+          id?: string
+          mime_type?: string
+          size?: number
+          storage_path?: string
+          thumbnail_url?: string
+          updated_at?: string
+          width?: number
+        }
+        Relationships: []
+      }
+      pin_comment_image_thumbnails: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_meta_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_meta_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_meta_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pin_comment_image_thumbnails_image_meta_id_fkey"
+            columns: ["image_meta_id"]
+            isOneToOne: false
+            referencedRelation: "pin_comment_image_metas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      postit_workouts: {
+        Row: {
+          checked: number[]
+          descriptions: string[]
+          id: number
+          japanese: string
+          japanese_passed: boolean
+          one_sentence_image_url: string
+          one_sentence_passed: boolean
+          one_topic_image_url: string
+          one_topic_passed: boolean
+          ordered_image_url: string
+          ordered_passed: boolean
+          three_topics_image_urls: string[]
+          three_topics_passed: boolean
+          topic: string
+          uid: string
+        }
+        Insert: {
+          checked?: number[]
+          descriptions?: string[]
+          id?: number
+          japanese?: string
+          japanese_passed?: boolean
+          one_sentence_image_url?: string
+          one_sentence_passed?: boolean
+          one_topic_image_url?: string
+          one_topic_passed?: boolean
+          ordered_image_url?: string
+          ordered_passed?: boolean
+          three_topics_image_urls?: string[]
+          three_topics_passed?: boolean
+          topic?: string
+          uid: string
+        }
+        Update: {
+          checked?: number[]
+          descriptions?: string[]
+          id?: number
+          japanese?: string
+          japanese_passed?: boolean
+          one_sentence_image_url?: string
+          one_sentence_passed?: boolean
+          one_topic_image_url?: string
+          one_topic_passed?: boolean
+          ordered_image_url?: string
+          ordered_passed?: boolean
+          three_topics_image_urls?: string[]
+          three_topics_passed?: boolean
+          topic?: string
+          uid?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sentences: {
+        Row: {
+          articleId: number
+          chinese: string
+          created_at: string
+          id: number
+          japanese: string
+          line: number
+          original: string
+          pitchStr: string
+        }
+        Insert: {
+          articleId: number
+          chinese: string
+          created_at?: string
+          id?: number
+          japanese: string
+          line: number
+          original: string
+          pitchStr: string
+        }
+        Update: {
+          articleId?: number
+          chinese?: string
+          created_at?: string
+          id?: number
+          japanese?: string
+          line?: number
+          original?: string
+          pitchStr?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_sentences_articleId_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_sentences_articleId_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      articles_view: {
+        Row: {
+          audioPath: string | null
+          created_at: string | null
+          date: string | null
+          display: string | null
+          id: number | null
+          isArchived: boolean | null
+          isShowAccents: boolean | null
+          title: string | null
+          uid: string | null
+        }
+        Relationships: []
+      }
+      dictation_article_journal_status_view: {
+        Row: {
+          all_done: boolean | null
+          article_id: string | null
+          assignment_id: string | null
+          done_count: number | null
+          full_title: string | null
+          has_cloze_spans: boolean | null
+          has_journal: boolean | null
+          journal_id: string | null
+          journal_locked: boolean | null
+          seq: number | null
+          subtitle: string | null
+          title: string | null
+          total_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_sentences_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_assignment_counts_view: {
+        Row: {
+          created_at: string | null
+          done_count: number | null
+          due_at: string | null
+          id: string | null
+          published_at: string | null
+          title: string | null
+          total_count: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_assignments_view: {
+        Row: {
+          due_at: string | null
+          due_at_tpe: string | null
+          due_month_tpe: number | null
+          due_year_tpe: number | null
+          due_ym_key: string | null
+          id: string | null
+          is_published: boolean | null
+          published_at: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          due_at?: string | null
+          due_at_tpe?: never
+          due_month_tpe?: never
+          due_year_tpe?: never
+          due_ym_key?: never
+          id?: string | null
+          is_published?: never
+          published_at?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          due_at?: string | null
+          due_at_tpe?: never
+          due_month_tpe?: never
+          due_year_tpe?: never
+          due_ym_key?: never
+          id?: string | null
+          is_published?: never
+          published_at?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      dictation_current_streak_view: {
+        Row: {
+          current_streak_days: number | null
+          latest_logged_day: string | null
+          streak_start_day: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      dictation_journals_daily_users_view: {
+        Row: {
+          created_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      dictation_journals_view: {
+        Row: {
+          article_id: string | null
+          article_seq: number | null
+          assignment_id: string | null
+          body: string | null
+          cloze_spans: Json | null
+          created_at: string | null
+          due_at: string | null
+          id: string | null
+          lines_count: number | null
+          locked: boolean | null
+          rating_score: number | null
+          self_award: Database["public"]["Enums"]["self_award_t"] | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_journals_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: true
+            referencedRelation: "dictation_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_sentences_view: {
+        Row: {
+          article_id: string | null
+          article_seq: number | null
+          assignment_id: string | null
+          audio_path: string | null
+          content: string | null
+          created_at: string | null
+          full_title: string | null
+          sentence_id: string | null
+          sentence_seq: number | null
+          submission_id: string | null
+          subtitle: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_sentences_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dictation_submissions_daily_users_view: {
+        Row: {
+          created_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      dictation_submissions_view: {
+        Row: {
+          ai_feedback_md: string | null
+          answer: string | null
+          article_id: string | null
+          assignment_id: string | null
+          created_at: string | null
+          date: string | null
+          elapsed_ms_since_first_play: number | null
+          elapsed_ms_since_item_view: number | null
+          plays_count: number | null
+          self_assessed_comprehension: number | null
+          sentence_id: string | null
+          submission_id: string | null
+          teacher_feedback_md: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_articles_assignment_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_assignments_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dictation_sentences_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "dictation_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sentences_view: {
+        Row: {
+          articleId: number | null
+          articleRecordedAssignmentId: number | null
+          audioPath: string | null
+          chinese: string | null
+          created_at: string | null
+          date: string | null
+          end: number | null
+          id: number | null
+          isArchived: boolean | null
+          isShowAccents: boolean | null
+          japanese: string | null
+          line: number | null
+          original: string | null
+          pitchStr: string | null
+          recorded_audioPath: string | null
+          start: number | null
+          title: string | null
+          uid: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_sentences_articleId_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_sentences_articleId_fkey"
+            columns: ["articleId"]
+            isOneToOne: false
+            referencedRelation: "articles_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Functions: {
+      create_feedback_and_log: {
+        Args: {
+          p_ai_feedback_md: string
+          p_answer: string
+          p_elapsed_ms_since_first_play: number
+          p_elapsed_ms_since_item_view: number
+          p_plays_count: number
+          p_self_comp: number
+          p_sentence_id: string
+        }
+        Returns: {
+          article_id: string
+          completed: boolean
+          logged: boolean
+          saved: boolean
+        }[]
+      }
+      delete_thumbnail_and_image: {
+        Args: { p_image_id: string }
+        Returns: undefined
+      }
+      dictation_close_day: { Args: { p_day?: string }; Returns: undefined }
+      dictation_count_lines: { Args: { p_text: string }; Returns: number }
+      dictation_penalty: { Args: { consecutive_days: number }; Returns: number }
+      get_article_answers_for_modal: {
+        Args: { p_article_id: string }
+        Returns: {
+          ai_feedback_md: string
+          answer: string
+          content: string
+          seq: number
+        }[]
+      }
+      get_article_page: { Args: { p_article_id: string }; Returns: Json }
+      get_assignment_article_tags: {
+        Args: { p_assignment_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          journal_body: string
+          journal_created_at: string
+          seq: number
+          subtitle: string
+          tags: string[]
+        }[]
+      }
+      get_distinct_due_ym_keys: {
+        Args: never
+        Returns: {
+          due_ym_key: string
+        }[]
+      }
+      get_journals: {
+        Args: { p_uid: string }
+        Returns: {
+          article_id: string
+          body: string
+          cloze_spans: Json
+          created_at: string
+          has_more: boolean
+          id: string
+          locked: boolean
+          next_before: string
+          rating_score: number
+          self_award: Database["public"]["Enums"]["self_award_t"]
+        }[]
+      }
+      get_journals_more: {
+        Args: { p_before: string; p_limit?: number; p_uid: string }
+        Returns: {
+          article_id: string
+          body: string
+          cloze_spans: Json
+          created_at: string
+          has_more: boolean
+          id: string
+          locked: boolean
+          next_before: string
+          rating_score: number
+          self_award: Database["public"]["Enums"]["self_award_t"]
+        }[]
+      }
+      get_mvj: {
+        Args: { p_uid: string }
+        Returns: {
+          mvj_due_at: string
+          mvj_id: string
+          mvj_image_url: string
+          mvj_reason: string
+          mvj_title: string
+        }[]
+      }
+      get_next_class: {
+        Args: { p_uid: string }
+        Returns: {
+          article_count: number
+          assignment_id: string
+          done_count: number
+          due_at: string
+          journal_count: number
+          next_article_id: string
+          next_full_title: string
+          next_sentence_seq: number
+          quick_write_article_id: string
+          quick_write_full_title: string
+          start_at: string
+          total_count: number
+        }[]
+      }
+      get_or_create_dictation_tag: {
+        Args: { p_label: string }
+        Returns: string
+      }
+      get_power_index: {
+        Args: { p_uid: string }
+        Returns: {
+          consecutive_idle_days: number
+          current_streak_days: number
+          has_journal: boolean
+          has_submissions: boolean
+          next_penalty: number
+          power_index: number
+          power_index_state: Database["public"]["Enums"]["dictation_power_index_state_t"]
+        }[]
+      }
+      get_submission_by_id: { Args: { p_submission_id: string }; Returns: Json }
+      get_submission_latest: {
+        Args: {
+          p_article_id?: string
+          p_limit?: number
+          p_offset?: number
+          p_user_id?: string
+        }
+        Returns: {
+          answer: string
+          article_id: string
+          content: string
+          created_at: string
+          display: string
+          elapsed_ms_since_first_play: number
+          elapsed_ms_since_item_view: number
+          id: string
+          plays_count: number
+          self_assessed_comprehension: number
+          sentence_id: string
+          seq: number
+          subtitle: string
+          title: string
+          user_id: string
+        }[]
+      }
+      immutable_unaccent: { Args: { "": string }; Returns: string }
+      insert_article_with_next_seq: {
+        Args: { p_assignment_id: string; p_subtitle: string }
+        Returns: {
+          id: string
+          seq: number
+        }[]
+      }
+      insert_thumbnail_with_image: {
+        Args: { p_file_name: string; p_storage_path: string; p_user_id: string }
+        Returns: {
+          image_id: string
+        }[]
+      }
+      journal_vote: {
+        Args: { p_delta: number; p_id: string }
+        Returns: undefined
+      }
+      pick_random_cloze_journal_fast: {
+        Args: { p_uid: string }
+        Returns: {
+          article_id: string | null
+          article_seq: number | null
+          assignment_id: string | null
+          body: string | null
+          cloze_spans: Json | null
+          created_at: string | null
+          due_at: string | null
+          id: string | null
+          lines_count: number | null
+          locked: boolean | null
+          rating_score: number | null
+          self_award: Database["public"]["Enums"]["self_award_t"] | null
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "dictation_journals_view"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      save_dictation_journal: {
+        Args: { p_article_id: string; p_body: string }
+        Returns: undefined
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      submit_mvj_and_awards: {
+        Args: {
+          p_best_id: string
+          p_hm_ids: string[]
+          p_image_url: string
+          p_initial_ids: string[]
+          p_mvj_id: string
+          p_reason: string
+        }
+        Returns: undefined
+      }
+      unaccent: { Args: { "": string }; Returns: string }
+    }
+    Enums: {
+      chat_role: "system" | "user" | "assistant"
+      dictation_power_index_state_t: "stopped" | "running" | "paused"
+      mvj_scope_t: "monthly" | "half" | "yearly"
+      self_award_t: "none" | "mbest" | "mhm" | "hbest" | "hhm" | "ybest" | "yhm"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      chat_role: ["system", "user", "assistant"],
+      dictation_power_index_state_t: ["stopped", "running", "paused"],
+      mvj_scope_t: ["monthly", "half", "yearly"],
+      self_award_t: ["none", "mbest", "mhm", "hbest", "hhm", "ybest", "yhm"],
+    },
+  },
+} as const

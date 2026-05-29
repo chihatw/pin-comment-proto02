@@ -3,14 +3,16 @@ import { supabase } from '@/lib/supabaseClient';
 import { saveEllipses } from '@/repositories/ellipseRepository';
 import { imageMetaRepository } from '@/repositories/imageMetaRepository';
 import { imageThumbnailRepository } from '@/repositories/imageThumbnailRepository';
-import type { ImageMeta } from '@/types/imageMeta';
+import { Database } from '@/types/supabase';
 import { useEffect, useRef, useState } from 'react';
 
 /**
  * サムネイル一覧・アップロード・削除・ドラッグ状態管理用カスタムフック
  */
 export function useThumbnails() {
-  const [thumbnails, setThumbnails] = useState<ImageMeta[]>([]);
+  const [thumbnails, setThumbnails] = useState<
+    Database['public']['Tables']['pin_comment_image_metas']['Row'][]
+  >([]);
   const [uploading, setUploading] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
   const dragCounter = useRef(0);
@@ -29,7 +31,9 @@ export function useThumbnails() {
         setThumbnails([]);
         return;
       }
-      const metaIds = thumbRows.map((row) => row.image_meta_id);
+      const metaIds = thumbRows
+        .map((row) => row.image_meta_id)
+        .filter((v): v is string => !!v);
       const { data: metas, error: metaError } = await supabase
         .from('pin_comment_image_metas')
         .select('*')

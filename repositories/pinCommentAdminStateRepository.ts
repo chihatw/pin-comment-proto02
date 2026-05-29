@@ -1,17 +1,13 @@
+import { Database } from '@/types/supabase';
 import { supabase } from '../lib/supabaseClient';
 import { PIN_COMMENT_ADMIN_STATE_ID } from '../utils/constants';
-
-export type PinCommentAdminState = {
-  id: string;
-  selected_image_meta_id: string | null;
-  selected_ellipse_ids: string[] | null;
-  updated_at: string;
-};
 
 /**
  * 管理用状態を取得
  */
-export async function fetchPinCommentAdminState(): Promise<PinCommentAdminState | null> {
+export async function fetchPinCommentAdminState(): Promise<
+  Database['public']['Tables']['pin_comment_admin_state']['Row'] | null
+> {
   const { data, error } = await supabase
     .from('pin_comment_admin_state')
     .select('*')
@@ -27,17 +23,14 @@ export async function fetchPinCommentAdminState(): Promise<PinCommentAdminState 
 export async function updatePinCommentAdminState(
   params: Partial<
     Pick<
-      PinCommentAdminState,
+      Database['public']['Tables']['pin_comment_admin_state']['Row'],
       'selected_image_meta_id' | 'selected_ellipse_ids'
     >
-  >
-): Promise<PinCommentAdminState | null> {
-  const { data, error } = await supabase
+  >,
+): Promise<void> {
+  const { error } = await supabase
     .from('pin_comment_admin_state')
     .update({ ...params, updated_at: new Date().toISOString() })
-    .eq('id', PIN_COMMENT_ADMIN_STATE_ID)
-    .select()
-    .single();
+    .eq('id', PIN_COMMENT_ADMIN_STATE_ID);
   if (error) throw error;
-  return data;
 }
